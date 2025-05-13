@@ -51,10 +51,8 @@ def sweep_servo(channel: int, start_angle: float, end_angle: float, step: float 
             time.sleep(delay)
 
     finally:
-        rc.servo_power_rail_en(False)
+        rc.servo_power_rail_en(False)               # Power off the servo rail to save energy. Remove this line if the servos drift under the weight of the turret.
         print("Servo sweep complete. Power off.")
 
     # Example usage:
     #sweep_servo(channel=1, start_angle=0, end_angle=180, step=2)
-
-
