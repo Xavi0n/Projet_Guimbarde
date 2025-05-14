@@ -1,42 +1,45 @@
 import spidev
-import threading
+from multiprocessing import Pipe
 
-def spi_listener(bus=1, device=0, speed=500000):
-    spi = spidev.SpiDev()
-    spi.open(bus, device)
-    spi.max_speed_hz = speed
-    spi.mode = 0  # SPI mode 0
+def start_SPI_listener(SPI_conn, SPI_bus=1, SPI_device=0, SPI_speed=500000):
+    SPI_device_handle = spidev.SpiDev()
+    SPI_device_handle.open(SPI_bus, SPI_device)
+    SPI_device_handle.max_speed_hz = SPI_speed
+    SPI_device_handle.mode = 0  # SPI mode 0
 
-    def read_frame():
-        buffer = []
+    SPI_buffer = []
 
-        while True:
-            byte = spi.readbytes(1)[0]
+    while True:
+        SPI_byte = SPI_device_handle.readbytes(1)[0]
 
-            # Sync to start of frame: 0x55, then 0xAA
-            if len(buffer) == 0 and byte == 0x55:
-                buffer.append(byte)
-            elif len(buffer) == 1:
-                if byte == 0xAA:
-                    buffer.append(byte)
-                else:
-                    buffer = []  # Restart sync
-            elif 2 <= len(buffer) < 9:
-                buffer.append(byte)
+        # Sync to frame header: 0x55, 0xAA
+        if len(SPI_buffer) == 0 and SPI_byte == 0x55:
+            SPI_buffer.append(SPI_byte)
+        elif len(SPI_buffer) == 1:
+            if SPI_byte == 0xAA:
+                SPI_buffer.append(SPI_byte)
+            else:
+                SPI_buffer = []
+        elif 2 <= len(SPI_buffer) < 9:
+            SPI_buffer.append(SPI_byte)
 
-            if len(buffer) == 9:
-                # Extract payload (excluding headers)
-                payload = buffer[2:8]
-                received_checksum = buffer[8]
-                calculated_checksum = sum(payload) & 0xFF
+        if len(SPI_buffer) == 9:
+            SPI_payload = SPI_buffer[2:8]
+            SPI_received_checksum = SPI_buffer[8]
+            SPI_calculated_checksum = sum(SPI_payload) & 0xFF
 
-                if received_checksum == calculated_checksum:
-                    mode, x, y, button, fan, strength = payload
-                    print(f"[SPI Frame] Mode: {mode}, X: {x}, Y: {y}, Button: {button}, Fan: {fan}, Strength: {strength}")
-                else:
-                    print("[SPI Frame] Invalid checksum")
+            if SPI_received_checksum == SPI_calculated_checksum:
+                SPI_frame_dict = {
+                    'mode': SPI_payload[0],
+                    'x': SPI_payload[1],
+                    'y': SPI_payload[2],
+                    'button': SPI_payload[3],
+                    'fan_speed': SPI_payload[4],
+                    'shoot_strength': SPI_payload[5],
+                    'checksum': SPI_received_checksum
+                }
 
-                buffer = []  # Reset buffer for next frame
+                SPI_conn.send(SPI_frame_dict)  # Send the validated frame to main program
 
-    # Run the read loop
-    read_frame()
+            SPI_buffer = []
+
