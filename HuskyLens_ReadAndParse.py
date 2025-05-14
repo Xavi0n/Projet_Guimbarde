@@ -4,80 +4,81 @@ import time
 HUSKYLENS_I2C_ADDR = 0x32  # 7-bit address
 CMD_REQUEST_BLOCKS = [0x55, 0xAA, 0x11, 0x00, 0x11]  # Request all learned blocks
 
-def request_blocks_i2c(bus_number=2):
+def request_blocks_i2c(I2C_bus_number=2):
     try:
-        with SMBus(bus_number) as bus:
+        with SMBus(I2C_bus_number) as I2C_bus:
             # Send request command
-            write = i2c_msg.write(HUSKYLENS_I2C_ADDR, CMD_REQUEST_BLOCKS)
-            bus.i2c_rdwr(write)
+            I2C_write_msg = i2c_msg.write(HUSKYLENS_I2C_ADDR, CMD_REQUEST_BLOCKS)
+            I2C_bus.i2c_rdwr(I2C_write_msg)
             time.sleep(0.05)
 
             # Read up to 64 bytes
-            read = i2c_msg.read(HUSKYLENS_I2C_ADDR, 64)
-            bus.i2c_rdwr(read)
+            I2C_read_msg = i2c_msg.read(HUSKYLENS_I2C_ADDR, 64)
+            I2C_bus.i2c_rdwr(I2C_read_msg)
 
-            response = list(read)
-            print("Raw response:", [hex(b) for b in response])
-            return response
-    except Exception as e:
-        print(f"I2C communication error: {e}")
+            I2C_response_bytes = list(I2C_read_msg)
+            print("Raw response:", [hex(I2C_b) for I2C_b in I2C_response_bytes])
+            return I2C_response_bytes
+    except Exception as I2C_error:
+        print(f"I2C communication error: {I2C_error}")
         return None
 
-def parse_huskylens_response(data_bytes):
+
+def parse_huskylens_response(I2C_data_bytes):
     """
     Parses HuskyLens object recognition response data.
 
     Parameters:
-        data_bytes (list of int): Raw byte data from HuskyLens.
+        I2C_data_bytes (list of int): Raw byte data from HuskyLens.
 
     Returns:
         List of dictionaries, one per recognized object.
         Also prints each validated frame as a hex string.
     """
-    FRAME_HEADER = [0x55, 0xAA]
-    FRAME_SIZE = 16
-    PAYLOAD_SIZE = 10
-    parsed_objects = []
+    I2C_FRAME_HEADER = [0x55, 0xAA]
+    I2C_FRAME_TOTAL_SIZE = 16
+    I2C_PAYLOAD_SIZE = 10
+    I2C_parsed_objects = []
 
-    i = 0
-    while i < len(data_bytes) - FRAME_SIZE + 1:
-        if data_bytes[i] == FRAME_HEADER[0] and data_bytes[i + 1] == FRAME_HEADER[1]:
-            frame = data_bytes[i:i + FRAME_SIZE]
+    I2C_index = 0
+    while I2C_index < len(I2C_data_bytes) - I2C_FRAME_TOTAL_SIZE + 1:
+        if I2C_data_bytes[I2C_index] == I2C_FRAME_HEADER[0] and I2C_data_bytes[I2C_index + 1] == I2C_FRAME_HEADER[1]:
+            I2C_frame = I2C_data_bytes[I2C_index:I2C_index + I2C_FRAME_TOTAL_SIZE]
 
-            address = frame[2]
-            length = frame[3] + (frame[4] << 8)
-            if address != 0x11 or length != PAYLOAD_SIZE:
-                i += 1
+            I2C_address = I2C_frame[2]
+            I2C_length = I2C_frame[3] + (I2C_frame[4] << 8)
+            if I2C_address != 0x11 or I2C_length != I2C_PAYLOAD_SIZE:
+                I2C_index += 1
                 continue
 
-            checksum = frame[-1]
-            checksum_calc = (sum(frame[2:-1])) & 0xFF
-            if checksum != checksum_calc:
-                i += 1
+            I2C_checksum = I2C_frame[-1]
+            I2C_checksum_calc = (sum(I2C_frame[2:-1])) & 0xFF
+            if I2C_checksum != I2C_checksum_calc:
+                I2C_index += 1
                 continue
 
             # Print validated frame as hex
-            hex_frame = ' '.join(f'{byte:02X}' for byte in frame)
-            print(f'Validated frame: {hex_frame}')
+            I2C_hex_frame = ' '.join(f'{I2C_byte:02X}' for I2C_byte in I2C_frame)
+            print(f'Validated frame: {I2C_hex_frame}')
 
             # Parse payload
-            payload = frame[5:15]
-            obj_id    = payload[0] + (payload[1] << 8)
-            x_center  = payload[2] + (payload[3] << 8)
-            y_center  = payload[4] + (payload[5] << 8)
-            width     = payload[6] + (payload[7] << 8)
-            height    = payload[8] + (payload[9] << 8)
+            I2C_payload = I2C_frame[5:15]
+            I2C_obj_id    = I2C_payload[0] + (I2C_payload[1] << 8)
+            I2C_x_center  = I2C_payload[2] + (I2C_payload[3] << 8)
+            I2C_y_center  = I2C_payload[4] + (I2C_payload[5] << 8)
+            I2C_width     = I2C_payload[6] + (I2C_payload[7] << 8)
+            I2C_height    = I2C_payload[8] + (I2C_payload[9] << 8)
 
-            parsed_objects.append({
-                'id': obj_id,
-                'x': x_center,
-                'y': y_center,
-                'width': width,
-                'height': height
+            I2C_parsed_objects.append({
+                'id': I2C_obj_id,
+                'x': I2C_x_center,
+                'y': I2C_y_center,
+                'width': I2C_width,
+                'height': I2C_height
             })
 
-            i += FRAME_SIZE
+            I2C_index += I2C_FRAME_TOTAL_SIZE
         else:
-            i += 1
+            I2C_index += 1
 
-    return parsed_objects
+    return I2C_parsed_objects
