@@ -26,15 +26,16 @@ def AdjustFromTheSlab(SPI_frame_dict, Current_X_Angle, Current_Y_Angle):
         print(f"X-axis servo angle: {Current_X_Angle + Manual_X}")
 
     if Manual_Y != DEADZONE:
-        set_pwm_width(2, angle_to_pulse(Current_Y_Angle + Manual_Y))  # Y-axis servo (channel 2)
+        set_pwm_width(2, angle_to_pulse(Current_Y_Angle + Manual_Y))  # Y-axis servo 1 (channel 2)
+        set_pwm_width(3, angle_to_pulse((270 - Current_Y_Angle) - Manual_Y))  # Y-axis servo 2 (channel 3)
         print(f"Y-axis servo angle: {Current_Y_Angle + Manual_Y}")
 
     if Fire_Button == 1:
-        enable_one_channel(4)
+        enable_one_channel(5)
         print("Fire button pressed, shooting enabled.")
     else:
-        disable_one_channel(4)
+        disable_one_channel(5)
         print("Fire button released, shooting disabled.")
 
     set_throttle_percent(3, Fan_Speed)  # Fan speed control (channel 3)
-    set_throttle_percent(4, Shoot_Strength)  # Shooting strength control (channel 4)
+    set_throttle_percent(5, Shoot_Strength)  # Shooting strength control (channel 5)

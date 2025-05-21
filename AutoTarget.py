@@ -69,11 +69,12 @@ def track_object_with_servos(I2C_parsed_objects, target_id, center_x=160, center
     # Set servo PWM for X-axis and Y-axis servos
     set_pwm_width(1, angle_to_pulse(x_servo_angle))  # X-axis servo (channel 1)
     set_pwm_width(2, angle_to_pulse(y_servo_angle))  # Y-axis servo (channel 2)
+    set_pwm_width(3, angle_to_pulse((270 - y_servo_angle)))  # Y-axis servo 2 (channel 3)
 
     print(f"Moved servos to: X={x_servo_angle}, Y={y_servo_angle}")
 
 def Shoot_if_on_target():
-    enable_one_channel(4)
+    enable_one_channel(5)
     print("Target acquired, shooting enabled.")
     time.sleep(0.5)         #ADJUST WAIT VALUE FOR CONSISTENT 3 ROUND BURSTS
-    disable_one_channel(4)
+    disable_one_channel(5)
