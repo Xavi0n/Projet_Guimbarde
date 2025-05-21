@@ -1,3 +1,4 @@
+# huskylens.py
 from smbus2 import SMBus, i2c_msg
 import time
 
@@ -17,24 +18,12 @@ def request_blocks_i2c(I2C_bus_number=2):
             I2C_bus.i2c_rdwr(I2C_read_msg)
 
             I2C_response_bytes = list(I2C_read_msg)
-            print("Raw response:", [hex(I2C_b) for I2C_b in I2C_response_bytes])
             return I2C_response_bytes
-    except Exception as I2C_error:
-        print(f"I2C communication error: {I2C_error}")
+    except Exception as e:
+        print(f"I2C error: {e}")
         return None
 
-
 def parse_huskylens_response(I2C_data_bytes):
-    """
-    Parses HuskyLens object recognition response data.
-
-    Parameters:
-        I2C_data_bytes (list of int): Raw byte data from HuskyLens.
-
-    Returns:
-        List of dictionaries, one per recognized object.
-        Also prints each validated frame as a hex string.
-    """
     I2C_FRAME_HEADER = [0x55, 0xAA]
     I2C_FRAME_TOTAL_SIZE = 16
     I2C_PAYLOAD_SIZE = 10
@@ -57,11 +46,6 @@ def parse_huskylens_response(I2C_data_bytes):
                 I2C_index += 1
                 continue
 
-            # Print validated frame as hex
-            I2C_hex_frame = ' '.join(f'{I2C_byte:02X}' for I2C_byte in I2C_frame)
-            print(f'Validated frame: {I2C_hex_frame}')
-
-            # Parse payload
             I2C_payload = I2C_frame[5:15]
             I2C_obj_id    = I2C_payload[0] + (I2C_payload[1] << 8)
             I2C_x_center  = I2C_payload[2] + (I2C_payload[3] << 8)
@@ -82,3 +66,9 @@ def parse_huskylens_response(I2C_data_bytes):
             I2C_index += 1
 
     return I2C_parsed_objects
+
+def get_parsed_huskylens_objects():
+    data = request_blocks_i2c()
+    if data is None:
+        return []
+    return parse_huskylens_response(data)
