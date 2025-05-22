@@ -21,7 +21,7 @@ int get_huskylens_objects(HuskylensObject *objs, int max_objects) {
 
 
     // Import huskylens module
-    pName = PyUnicode_DecodeFSDefault("huskylens");
+    pName = PyUnicode_DecodeFSDefault("HuskyLens_ReadAndParse");
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
 
