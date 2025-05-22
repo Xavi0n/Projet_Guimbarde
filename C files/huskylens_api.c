@@ -17,7 +17,8 @@ int get_huskylens_objects(HuskylensObject *objs, int max_objects) {
     Py_Initialize();
 
     // Add current directory to Python sys.path
-    PyRun_SimpleString("import sys; sys.path.insert(0, '.')");
+    PyRun_SimpleString("import sys; sys.path.insert(0, '../py files')");
+
 
     // Import huskylens module
     pName = PyUnicode_DecodeFSDefault("huskylens");
