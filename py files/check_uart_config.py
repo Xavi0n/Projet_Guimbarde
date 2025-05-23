@@ -18,6 +18,7 @@ def check_uart_config():
         print(f"\nChecking {uart_name}:")
         print("-" * 20)
         
+        
         # Check if the UART device exists
         if os.path.exists(base_path):
             print(f"✓ {uart_name} device exists")
