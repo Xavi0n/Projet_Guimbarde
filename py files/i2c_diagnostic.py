@@ -1,10 +1,10 @@
-import smbus2
+import smbus
 import time
 from typing import List
 
 class HuskyLensDebug:
     def __init__(self, bus_number: int = 1, address: int = 0x32):
-        self.bus = smbus2.SMBus(bus_number)
+        self.bus = smbus.SMBus(bus_number)
         self.address = address
         
     def test_raw_write(self, data: List[int]) -> bool:
