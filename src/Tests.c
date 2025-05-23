@@ -9,6 +9,7 @@
 #define RED     "\x1b[31m"
 #define GREEN   "\x1b[32m"
 #define YELLOW  "\x1b[33m"
+#define BLUE    "\x1b[34m"
 #define RESET   "\x1b[0m"
 
 // Test status tracking
@@ -25,6 +26,22 @@ static int tests_passed = 0;
         printf(RED "✗ %s\n" RESET, message); \
     } \
 } while (0)
+
+// Function to print detected objects
+void print_detected_objects(HuskylensObject *objs, int count) {
+    if (count > 0) {
+        printf(BLUE "\n=== HuskyLens Detections ===\n" RESET);
+        for (int i = 0; i < count; i++) {
+            printf(BLUE "Object %d:\n", i + 1);
+            printf("  ID: %ld\n", objs[i].id);
+            printf("  Position: (x=%ld, y=%ld)\n", objs[i].x, objs[i].y);
+            printf("  Size: %ldx%ld\n" RESET, objs[i].width, objs[i].height);
+        }
+        printf(BLUE "=========================\n" RESET);
+    } else {
+        printf(BLUE "No objects detected by HuskyLens\n" RESET);
+    }
+}
 
 // Test functions
 void test_null_pointer() {
@@ -46,6 +63,7 @@ void test_basic_functionality() {
     int result = get_huskylens_objects(objs, 10);
     
     ASSERT("Function returns non-negative value", result >= 0);
+    print_detected_objects(objs, result);
     
     if (result > 0) {
         ASSERT("First object has valid coordinates", 
@@ -61,8 +79,12 @@ void test_multiple_calls() {
     printf("\nTesting multiple consecutive calls:\n");
     HuskylensObject objs[5];
     int first_call = get_huskylens_objects(objs, 5);
+    print_detected_objects(objs, first_call);
+    
     sleep(1); // Wait a second between calls
     int second_call = get_huskylens_objects(objs, 5);
+    printf(BLUE "\nSecond detection:\n" RESET);
+    print_detected_objects(objs, second_call);
     
     ASSERT("Multiple calls succeed", 
            first_call >= 0 && second_call >= 0);
@@ -81,6 +103,8 @@ void test_object_count_consistency() {
         printf(RED "Error: Failed to get objects for small array\n" RESET);
         return;
     }
+    printf(BLUE "\nSmall array detections:\n" RESET);
+    print_detected_objects(small_array, small_count);
     
     // Get objects with large array immediately after
     int large_count = get_huskylens_objects(large_array, 50);
@@ -88,6 +112,8 @@ void test_object_count_consistency() {
         printf(RED "Error: Failed to get objects for large array\n" RESET);
         return;
     }
+    printf(BLUE "\nLarge array detections:\n" RESET);
+    print_detected_objects(large_array, large_count);
     
     // If small array was filled completely, we expect large array might have more objects
     if (small_count == 3 && large_count > small_count) {

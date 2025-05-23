@@ -8,6 +8,11 @@
 // max_objects: max number of objects to read (avoid overflow)
 // objs: array of HuskylensObject to fill
 int get_huskylens_objects(HuskylensObject *objs, int max_objects) {
+    // Check for NULL pointer
+    if (objs == NULL) {
+        return -1;
+    }
+
     PyObject *pName, *pModule, *pFunc;
     PyObject *pValue, *pDict;
     Py_ssize_t list_size, i;
