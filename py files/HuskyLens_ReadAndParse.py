@@ -20,7 +20,7 @@ def request_blocks_i2c(I2C_bus_number=2):
             I2C_response_bytes = list(I2C_read_msg)
             return I2C_response_bytes
     except Exception as e:
-        print(f"I2C error: {e}")
+        print("I2C error: {}".format(e))
         return None
 
 def parse_huskylens_response(I2C_data_bytes):
