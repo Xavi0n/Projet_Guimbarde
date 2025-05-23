@@ -9,16 +9,15 @@
 // objs: array of HuskylensObject to fill
 int get_huskylens_objects(HuskylensObject *objs, int max_objects) {
     PyObject *pName, *pModule, *pFunc;
-    PyObject *pValue, *pList, *pDict;
+    PyObject *pValue, *pDict;
     Py_ssize_t list_size, i;
     int count = 0;
 
     // Initialize Python interpreter
     Py_Initialize();
 
-    // Add current directory to Python sys.path
-    PyRun_SimpleString("import sys; sys.path.insert(0, '../py files')");
-
+    // Add the directory containing the Python script to sys.path
+    PyRun_SimpleString("import sys; sys.path.insert(0, '/home/debian/Projet_Guimbarde/py files')");
 
     // Import huskylens module
     pName = PyUnicode_DecodeFSDefault("HuskyLens_ReadAndParse");
