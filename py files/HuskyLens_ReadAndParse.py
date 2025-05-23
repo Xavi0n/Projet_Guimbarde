@@ -2,86 +2,129 @@
 from smbus import SMBus
 import time
 
-HUSKYLENS_I2C_ADDR = 0x32  # 7-bit address
+HUSKYLENS_I2C_ADDR = 0x32
 
-# HuskyLens Commands
+# Protocol Headers and Commands
 COMMAND_HEADER = 0x55
+COMMAND_END = 0x54
 COMMAND_REQUEST_KNOCK = 0x2C
 COMMAND_REQUEST_BLOCKS_LEARNED = 0x25
+
+def calculate_checksum(data):
+    checksum = 0
+    for byte in data:
+        checksum += byte
+    return checksum & 0xFF
+
+def send_command(bus, command, data=None):
+    if data is None:
+        data = []
+    
+    # Construct the message
+    header = [COMMAND_HEADER, COMMAND_HEADER]  # Double header required
+    length_bytes = [len(data) & 0xFF, (len(data) >> 8) & 0xFF]  # Little endian length
+    message = [command] + length_bytes + data
+    checksum = calculate_checksum(message)
+    full_message = header + message + [checksum]
+    
+    print(f"Debug: Sending message: {[hex(x) for x in full_message]}")
+    
+    # Send byte by byte with small delays
+    try:
+        for i, byte in enumerate(full_message):
+            bus.write_byte(HUSKYLENS_I2C_ADDR, byte)
+            time.sleep(0.001)  # 1ms delay between bytes
+        return True
+    except Exception as e:
+        print(f"Debug: Send error at byte {i}: {e}")
+        return False
+
+def read_response(bus, expected_length=5):
+    response = []
+    try:
+        # Read with timeout
+        start_time = time.time()
+        while len(response) < 2 and (time.time() - start_time) < 1.0:
+            byte = bus.read_byte(HUSKYLENS_I2C_ADDR)
+            response.append(byte)
+            if len(response) >= 2 and (response[0] != COMMAND_HEADER or response[1] != COMMAND_HEADER):
+                print("Debug: Invalid header received")
+                response = []  # Reset and try again
+            time.sleep(0.001)
+        
+        if len(response) < 2:
+            print("Debug: Timeout waiting for header")
+            return None
+            
+        # Read command and length
+        for _ in range(3):  # Command + 2 length bytes
+            response.append(bus.read_byte(HUSKYLENS_I2C_ADDR))
+            time.sleep(0.001)
+            
+        # Calculate actual data length from response
+        data_length = response[3] + (response[4] << 8)
+        print(f"Debug: Expected data length: {data_length}")
+        
+        # Read data and checksum
+        for _ in range(data_length + 1):  # +1 for checksum
+            response.append(bus.read_byte(HUSKYLENS_I2C_ADDR))
+            time.sleep(0.001)
+            
+        print(f"Debug: Full response: {[hex(x) for x in response]}")
+        
+        # Verify checksum
+        received_checksum = response[-1]
+        calculated_checksum = calculate_checksum(response[2:-1])  # Exclude headers and checksum
+        if received_checksum != calculated_checksum:
+            print(f"Debug: Checksum mismatch. Received: {hex(received_checksum)}, Calculated: {hex(calculated_checksum)}")
+            return None
+            
+        return response
+    except Exception as e:
+        print(f"Debug: Read error: {e}")
+        return None
 
 def request_blocks_i2c(I2C_bus_number=1):
     try:
         print("Debug: Opening I2C bus {}".format(I2C_bus_number))
-        I2C_bus = SMBus(I2C_bus_number)
+        bus = SMBus(I2C_bus_number)
         
-        try:
-            # Try a simple read first to check connection
-            print("Debug: Testing basic I2C read...")
-            test_byte = I2C_bus.read_byte(HUSKYLENS_I2C_ADDR)
-            print("Debug: Basic read test result: {}".format(hex(test_byte)))
-            
-            # Small delay
-            time.sleep(0.1)
-            
-            # Try writing a single byte
-            print("Debug: Testing basic I2C write...")
-            I2C_bus.write_byte(HUSKYLENS_I2C_ADDR, COMMAND_HEADER)
-            time.sleep(0.1)
-            
-            # Now try the knock command
-            print("Debug: Sending simplified knock command...")
-            # Send header and command only
-            I2C_bus.write_byte_data(HUSKYLENS_I2C_ADDR, COMMAND_HEADER, COMMAND_REQUEST_KNOCK)
-            time.sleep(0.1)
-            
-            # Read response
-            print("Debug: Reading knock response one byte at a time...")
-            response = []
-            for i in range(5):
-                byte = I2C_bus.read_byte(HUSKYLENS_I2C_ADDR)
-                response.append(byte)
-                print("Debug: Read byte {}: {}".format(i, hex(byte)))
-                time.sleep(0.01)
-            
-            if any(byte != 0 for byte in response):
-                print("Debug: Got non-zero response!")
-                
-                # If we got a response, try requesting learned blocks
-                print("Debug: Sending request for learned blocks...")
-                cmd = [COMMAND_HEADER, COMMAND_HEADER, COMMAND_REQUEST_BLOCKS_LEARNED, 0x00, 0x00]
-                # Send command one byte at a time
-                for byte in cmd:
-                    I2C_bus.write_byte(HUSKYLENS_I2C_ADDR, byte)
-                    time.sleep(0.01)
-                
-                # Read response
-                print("Debug: Reading block data response...")
-                block_data = []
-                for i in range(20):  # Read more bytes to see what we get
-                    try:
-                        byte = I2C_bus.read_byte(HUSKYLENS_I2C_ADDR)
-                        block_data.append(byte)
-                        print("Debug: Block data byte {}: {}".format(i, hex(byte)))
-                    except IOError as e:
-                        print("Debug: Stopped reading at byte {}: {}".format(i, e))
-                        break
-                    time.sleep(0.01)
-                
-                return block_data
-            else:
-                print("Debug: Got all zeros in response")
-                return None
-                
-        except IOError as e:
-            print("Debug: I2C communication error: {}".format(e))
+        # First send knock command
+        print("Debug: Sending knock command...")
+        if not send_command(bus, COMMAND_REQUEST_KNOCK):
+            print("Debug: Failed to send knock command")
             return None
             
+        # Read knock response
+        print("Debug: Reading knock response...")
+        knock_response = read_response(bus)
+        if knock_response is None:
+            print("Debug: No valid knock response")
+            return None
+            
+        time.sleep(0.1)  # Wait before next command
+        
+        # Request learned blocks
+        print("Debug: Requesting learned blocks...")
+        if not send_command(bus, COMMAND_REQUEST_BLOCKS_LEARNED):
+            print("Debug: Failed to send blocks request")
+            return None
+            
+        # Read blocks response
+        print("Debug: Reading blocks response...")
+        blocks_response = read_response(bus)
+        if blocks_response is None:
+            print("Debug: No valid blocks response")
+            return None
+            
+        return blocks_response
+        
     except Exception as e:
-        print("I2C error: {}".format(e))
+        print(f"Debug: I2C error: {e}")
         return None
     finally:
-        if 'I2C_bus' in locals():
-            I2C_bus.close()
+        if 'bus' in locals():
+            bus.close()
             print("Debug: I2C bus closed")
 
 def parse_huskylens_response(data):
@@ -89,22 +132,38 @@ def parse_huskylens_response(data):
         print("Debug: No data to parse")
         return []
         
-    print("Debug: Raw data received: {}".format([hex(x) for x in data]))
-    objects = []
+    print(f"Debug: Parsing response of {len(data)} bytes")
+    print(f"Debug: Raw data: {[hex(x) for x in data]}")
     
-    # Look for header pattern
-    for i in range(len(data) - 10):
-        if data[i] == COMMAND_HEADER and data[i+1] == COMMAND_HEADER:
+    # Need at least headers (2) + command (1) + length (2) + checksum (1)
+    if len(data) < 6:
+        print("Debug: Response too short")
+        return []
+        
+    # Verify headers
+    if data[0] != COMMAND_HEADER or data[1] != COMMAND_HEADER:
+        print("Debug: Invalid headers")
+        return []
+        
+    # Get data length
+    data_length = data[3] + (data[4] << 8)
+    print(f"Debug: Data length from header: {data_length}")
+    
+    objects = []
+    if data_length > 0:
+        # Each block is 5 words (10 bytes)
+        num_blocks = data_length // 10
+        for i in range(num_blocks):
+            start = 5 + (i * 10)  # Skip header, command, and length
             try:
-                obj_id = data[i+5] + (data[i+6] << 8)
-                x = data[i+7] + (data[i+8] << 8)
-                y = data[i+9] + (data[i+10] << 8)
-                width = data[i+11] + (data[i+12] << 8)
-                height = data[i+13] + (data[i+14] << 8)
+                obj_id = data[start] + (data[start + 1] << 8)
+                x = data[start + 2] + (data[start + 3] << 8)
+                y = data[start + 4] + (data[start + 5] << 8)
+                width = data[start + 6] + (data[start + 7] << 8)
+                height = data[start + 8] + (data[start + 9] << 8)
                 
-                print("Debug: Found potential object - ID: {}, pos: ({}, {}), size: {}x{}".format(
-                    obj_id, x, y, width, height))
-                    
+                print(f"Debug: Found object - ID: {obj_id}, pos: ({x}, {y}), size: {width}x{height}")
+                
                 if 0 <= x < 320 and 0 <= y < 240 and width > 0 and height > 0:
                     objects.append({
                         'id': obj_id,
@@ -114,13 +173,14 @@ def parse_huskylens_response(data):
                         'height': height
                     })
             except IndexError:
+                print(f"Debug: Error parsing block {i}")
                 break
     
-    print("Debug: Found {} valid objects".format(len(objects)))
+    print(f"Debug: Found {len(objects)} valid objects")
     return objects
 
 def get_parsed_huskylens_objects():
-    print("Debug: Starting HuskyLens object detection with simplified protocol")
+    print("Debug: Starting HuskyLens object detection")
     data = request_blocks_i2c()
     if data is None:
         print("Debug: No data received from HuskyLens")
