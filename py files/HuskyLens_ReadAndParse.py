@@ -1,24 +1,28 @@
 # huskylens.py
-from smbus2 import SMBus, i2c_msg
+from smbus import SMBus
 import time
 
 HUSKYLENS_I2C_ADDR = 0x32  # 7-bit address
 CMD_REQUEST_BLOCKS = [0x55, 0xAA, 0x11, 0x00, 0x11]  # Request all learned blocks
 
-def request_blocks_i2c(I2C_bus_number=2):
+def request_blocks_i2c(I2C_bus_number=1):
     try:
-        with SMBus(I2C_bus_number) as I2C_bus:
-            # Send request command
-            I2C_write_msg = i2c_msg.write(HUSKYLENS_I2C_ADDR, CMD_REQUEST_BLOCKS)
-            I2C_bus.i2c_rdwr(I2C_write_msg)
-            time.sleep(0.05)
+        I2C_bus = SMBus(I2C_bus_number)
+        # Send request command
+        I2C_bus.write_i2c_block_data(HUSKYLENS_I2C_ADDR, CMD_REQUEST_BLOCKS[0], CMD_REQUEST_BLOCKS[1:])
+        time.sleep(0.05)
 
-            # Read up to 64 bytes
-            I2C_read_msg = i2c_msg.read(HUSKYLENS_I2C_ADDR, 64)
-            I2C_bus.i2c_rdwr(I2C_read_msg)
+        # Read up to 64 bytes
+        I2C_response_bytes = []
+        try:
+            for _ in range(64):
+                byte = I2C_bus.read_byte(HUSKYLENS_I2C_ADDR)
+                I2C_response_bytes.append(byte)
+        except IOError:
+            pass  # Stop reading when no more data
 
-            I2C_response_bytes = list(I2C_read_msg)
-            return I2C_response_bytes
+        I2C_bus.close()
+        return I2C_response_bytes
     except Exception as e:
         print("I2C error: {}".format(e))
         return None
