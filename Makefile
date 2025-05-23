@@ -12,7 +12,7 @@ OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # === RULES ===
 
-all: $(BIN)
+all: $(BIN) python_check
 
 $(BIN): $(OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -23,7 +23,12 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 $(OBJ_DIR):
 	mkdir -p $@
 
+python_check:
+	@echo "Checking Python scripts..."
+	@python -c "import py_compile; py_compile.compile('py files/HuskyLens_ReadAndParse.py')"
+
 clean:
 	rm -rf $(OBJ_DIR) $(BIN)
+	rm -f py files/*.pyc
 
-.PHONY: all clean
+.PHONY: all clean python_check
