@@ -27,7 +27,7 @@ def send_command(bus, command, data=None):
     checksum = calculate_checksum(message)
     full_message = header + message + [checksum]
     
-    print(f"Debug: Sending message: {[hex(x) for x in full_message]}")
+    print("Debug: Sending message: {}".format([hex(x) for x in full_message]))
     
     # Send byte by byte with small delays
     try:
@@ -36,7 +36,7 @@ def send_command(bus, command, data=None):
             time.sleep(0.001)  # 1ms delay between bytes
         return True
     except Exception as e:
-        print(f"Debug: Send error at byte {i}: {e}")
+        print("Debug: Send error at byte {}: {}".format(i, e))
         return False
 
 def read_response(bus, expected_length=5):
@@ -63,25 +63,26 @@ def read_response(bus, expected_length=5):
             
         # Calculate actual data length from response
         data_length = response[3] + (response[4] << 8)
-        print(f"Debug: Expected data length: {data_length}")
+        print("Debug: Expected data length: {}".format(data_length))
         
         # Read data and checksum
         for _ in range(data_length + 1):  # +1 for checksum
             response.append(bus.read_byte(HUSKYLENS_I2C_ADDR))
             time.sleep(0.001)
             
-        print(f"Debug: Full response: {[hex(x) for x in response]}")
+        print("Debug: Full response: {}".format([hex(x) for x in response]))
         
         # Verify checksum
         received_checksum = response[-1]
         calculated_checksum = calculate_checksum(response[2:-1])  # Exclude headers and checksum
         if received_checksum != calculated_checksum:
-            print(f"Debug: Checksum mismatch. Received: {hex(received_checksum)}, Calculated: {hex(calculated_checksum)}")
+            print("Debug: Checksum mismatch. Received: {}, Calculated: {}".format(
+                hex(received_checksum), hex(calculated_checksum)))
             return None
             
         return response
     except Exception as e:
-        print(f"Debug: Read error: {e}")
+        print("Debug: Read error: {}".format(e))
         return None
 
 def request_blocks_i2c(I2C_bus_number=1):
@@ -120,7 +121,7 @@ def request_blocks_i2c(I2C_bus_number=1):
         return blocks_response
         
     except Exception as e:
-        print(f"Debug: I2C error: {e}")
+        print("Debug: I2C error: {}".format(e))
         return None
     finally:
         if 'bus' in locals():
@@ -132,8 +133,8 @@ def parse_huskylens_response(data):
         print("Debug: No data to parse")
         return []
         
-    print(f"Debug: Parsing response of {len(data)} bytes")
-    print(f"Debug: Raw data: {[hex(x) for x in data]}")
+    print("Debug: Parsing response of {} bytes".format(len(data)))
+    print("Debug: Raw data: {}".format([hex(x) for x in data]))
     
     # Need at least headers (2) + command (1) + length (2) + checksum (1)
     if len(data) < 6:
@@ -147,7 +148,7 @@ def parse_huskylens_response(data):
         
     # Get data length
     data_length = data[3] + (data[4] << 8)
-    print(f"Debug: Data length from header: {data_length}")
+    print("Debug: Data length from header: {}".format(data_length))
     
     objects = []
     if data_length > 0:
@@ -162,7 +163,8 @@ def parse_huskylens_response(data):
                 width = data[start + 6] + (data[start + 7] << 8)
                 height = data[start + 8] + (data[start + 9] << 8)
                 
-                print(f"Debug: Found object - ID: {obj_id}, pos: ({x}, {y}), size: {width}x{height}")
+                print("Debug: Found object - ID: {}, pos: ({}, {}), size: {}x{}".format(
+                    obj_id, x, y, width, height))
                 
                 if 0 <= x < 320 and 0 <= y < 240 and width > 0 and height > 0:
                     objects.append({
@@ -173,10 +175,10 @@ def parse_huskylens_response(data):
                         'height': height
                     })
             except IndexError:
-                print(f"Debug: Error parsing block {i}")
+                print("Debug: Error parsing block {}".format(i))
                 break
     
-    print(f"Debug: Found {len(objects)} valid objects")
+    print("Debug: Found {} valid objects".format(len(objects)))
     return objects
 
 def get_parsed_huskylens_objects():
