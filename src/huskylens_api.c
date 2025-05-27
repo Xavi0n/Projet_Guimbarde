@@ -3,52 +3,55 @@
 #include <Python.h>
 #include <stdio.h>
 
-// Assumes huskylib.py has a function get_objects() returning list of dicts with keys:
-// "id", "x", "y", "width", "height"
-
+// This function initializes Python, calls Python function, and fills the objects array.
+// Returns the number of objects parsed, or -1 on error.
+// max_objects: max number of objects to read (avoid overflow)
+// objs: array of HuskylensObject to fill
 int get_huskylens_objects(HuskylensObject *objs, int max_objects) {
+    // Check for NULL pointer
     if (objs == NULL) {
         return -1;
     }
 
-    PyObject *pName = NULL, *pModule = NULL, *pFunc = NULL;
-    PyObject *pValue = NULL, *pDict = NULL;
+    PyObject *pName, *pModule, *pFunc;
+    PyObject *pValue, *pDict;
     Py_ssize_t list_size, i;
     int count = 0;
 
+    // Initialize Python interpreter
     Py_Initialize();
 
-    // Add your Python script directory to sys.path
+    // Add the directory containing the Python script to sys.path
     PyRun_SimpleString("import sys; sys.path.insert(0, '/home/debian/Projet_Guimbarde/py files')");
 
-    // Import huskylib module
-    pName = PyUnicode_DecodeFSDefault("huskylib");
+    // Import huskylens module
+    pName = PyUnicode_DecodeFSDefault("HuskyLens_ReadAndParse");
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
 
     if (!pModule) {
         PyErr_Print();
-        fprintf(stderr, "Failed to load huskylib module\n");
+        fprintf(stderr, "Failed to load huskylens module\n");
         Py_Finalize();
         return -1;
     }
 
-    // Get the function get_objects
-    pFunc = PyObject_GetAttrString(pModule, "get_objects");
+    // Get the function get_parsed_huskylens_objects
+    pFunc = PyObject_GetAttrString(pModule, "get_parsed_huskylens_objects");
     if (!pFunc || !PyCallable_Check(pFunc)) {
         if (PyErr_Occurred()) PyErr_Print();
-        fprintf(stderr, "Cannot find function get_objects\n");
+        fprintf(stderr, "Cannot find function get_parsed_huskylens_objects\n");
         Py_XDECREF(pFunc);
         Py_DECREF(pModule);
         Py_Finalize();
         return -1;
     }
 
-    // Call get_objects() with no arguments
+    // Call the function with no arguments
     pValue = PyObject_CallObject(pFunc, NULL);
     if (!pValue) {
         PyErr_Print();
-        fprintf(stderr, "Call to get_objects failed\n");
+        fprintf(stderr, "Call to get_parsed_huskylens_objects failed\n");
         Py_XDECREF(pFunc);
         Py_DECREF(pModule);
         Py_Finalize();
@@ -74,20 +77,22 @@ int get_huskylens_objects(HuskylensObject *objs, int max_objects) {
             PyObject *w_obj = PyDict_GetItemString(pDict, "width");
             PyObject *h_obj = PyDict_GetItemString(pDict, "height");
 
-            objs[count].id = (int)PyLong_AsLong(id_obj);
-            objs[count].x = (int)PyLong_AsLong(x_obj);
-            objs[count].y = (int)PyLong_AsLong(y_obj);
-            objs[count].width = (int)PyLong_AsLong(w_obj);
-            objs[count].height = (int)PyLong_AsLong(h_obj);
+            objs[count].id = PyLong_AsLong(id_obj);
+            objs[count].x = PyLong_AsLong(x_obj);
+            objs[count].y = PyLong_AsLong(y_obj);
+            objs[count].width = PyLong_AsLong(w_obj);
+            objs[count].height = PyLong_AsLong(h_obj);
 
             count++;
         }
     }
 
+    // Cleanup
     Py_DECREF(pValue);
     Py_XDECREF(pFunc);
     Py_DECREF(pModule);
 
+    // Finalize Python interpreter
     Py_Finalize();
 
     return count;
