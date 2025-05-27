@@ -1,14 +1,15 @@
-import sys
-sys.path.append('/home/debian/HUSKYLENSPython')
+from huskylib import HuskyLensLibrary
+import time
 
-import huskylib
+huskylens = HuskyLensLibrary("I2C", 0x32)  # adjust address if needed
 
-huskyLens = HuskyLensLibrary("I2C","",address=0x32)
-huskyLens.algorithm("ALGORITHM_FACE_RECOGNITION")
+try:
+    while True:
+        if huskylens.requestAll():
+            print("Data received:", huskylens)
+        else:
+            print("Read response error, please try again")
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("Stopped")
 
-while(1):
-    data=huskyLens.blocks()
-    x=0
-    for i in data:
-        x=x+1
-        print("Face {} data: {}".format(x,i))
