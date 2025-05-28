@@ -1,7 +1,7 @@
 from huskylib import HuskyLensLibrary, algorthimsByteID
 import time
 
-def main():
+def RequestHuskyData():
     huskylens = HuskyLensLibrary("I2C", 0x32)
 
     # Requests the detected objects 3 times to ensure the data is ready
