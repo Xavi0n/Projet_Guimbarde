@@ -13,6 +13,7 @@ typedef struct {
     int ID;
 } Block;
 
+
 int main() {
     Block blocks[MAX_BLOCKS];
     int blockCount = 0;
@@ -41,3 +42,4 @@ int main() {
 
     return 0;
 }
+
