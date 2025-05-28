@@ -12,7 +12,7 @@ SRC = $(wildcard $(SRC_DIR)/*.c)
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # Test-specific source and object files
-TEST_SRC = $(SRC_DIR)/test_huskylens.c $(SRC_DIR)/huskylens_api.c
+TEST_SRC = $(SRC_DIR)/test_huskylens.c $(SRC_DIR)/huskylens_api.c $(SRC_DIR)/auto_targeting.c
 TEST_OBJ = $(TEST_SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # === RULES ===
