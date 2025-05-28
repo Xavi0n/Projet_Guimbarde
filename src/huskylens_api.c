@@ -51,8 +51,6 @@ int get_huskylens_objects(HuskylensObject *objs, int max_objects) {
             objs[count].width = width;
             objs[count].height = height;
             count++;
-        } else {
-            fprintf(stderr, "Unexpected output format: %s\n", line);
         }
     }
 
