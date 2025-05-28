@@ -5,13 +5,12 @@ def main():
     #huskylens.algorithm("ALGORITHM_OBJECT_RECOGNITION")
 
     while True:
-        if huskylens.requestAll():
-            objects = huskylens.getObjects()
-            if not objects:
-                return  # No output if no objects
+        objects = huskylens.requestAll()
+        if not objects:
+            return  # No output if no objects
 
-            for obj in objects:
-                print(f"{obj.x} {obj.y} {obj.width} {obj.height} {obj.ID}")
+        for obj in objects:
+            print(f"{obj.x} {obj.y} {obj.width} {obj.height} {obj.ID}")
 
 if __name__ == "__main__":
     main()
