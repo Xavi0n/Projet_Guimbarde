@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h>  // For abs()
 #include <string.h>
 #include <stdint.h>
 #include "huskylens_api.h"
@@ -28,13 +28,21 @@ int get_huskylens_objects(HuskylensObject *objs, int max_objects) {
 
     char line[MAX_LINE_LEN];
     int count = 0;
+    int error_found = 0;
 
     // Read each line from the Python script output
     while (fgets(line, sizeof(line), fp) && count < max_objects) {
         // Remove newline if present
         line[strcspn(line, "\n")] = 0;
 
-        // Try to parse the line as object data
+        // Check if this looks like an error message
+        if (strstr(line, "Error") || strstr(line, "Exception") || strstr(line, "Traceback")) {
+            fprintf(stderr, "Python error: %s\n", line);
+            error_found = 1;
+            continue;
+        }
+
+        // Parse the line into a HuskylensObject
         long id, x, y, width, height;
         if (sscanf(line, "%ld %ld %ld %ld %ld", &x, &y, &width, &height, &id) == 5) {
             objs[count].id = id;
@@ -43,13 +51,14 @@ int get_huskylens_objects(HuskylensObject *objs, int max_objects) {
             objs[count].width = width;
             objs[count].height = height;
             count++;
+        } else {
+            fprintf(stderr, "Unexpected output format: %s\n", line);
         }
-        // Ignore lines that don't match our format (debug/status messages)
     }
 
     int status = pclose(fp);
-    if (status == -1) {
-        perror("Error closing Python script pipe");
+    if (status == -1 || error_found) {
+        perror("Error running Python script");
         return -1;
     }
 
