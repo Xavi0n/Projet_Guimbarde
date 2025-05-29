@@ -55,7 +55,7 @@ int main() {
                     printf("Error: Failed to move turret\n");
                 }
             }
-            rc_usleep(100000);  // 100ms delay for target detection
+            rc_usleep(20000);  // 20ms delay for target detection
         }
     }
 

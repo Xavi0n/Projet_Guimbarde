@@ -7,7 +7,7 @@
 #define SCREEN_CENTER_X 160
 #define SCREEN_CENTER_Y 120
 #define MAX_OBJECTS 32     
-#define TARGET_DEADZONE 10  // Target is considered centered if within this many pixels
+#define TARGET_DEADZONE 2  // Target is considered centered if within this many pixels
 
 // Object ID definitions
 #define ID_DOG     1
@@ -18,7 +18,7 @@
 
 // Angle limits for turret movement
 #define MIN_HORIZONTAL_ANGLE 0
-#define MAX_HORIZONTAL_ANGLE 100
+#define MAX_HORIZONTAL_ANGLE 110
 #define MIN_VERTICAL_ANGLE 10
 #define MAX_VERTICAL_ANGLE 160
 
