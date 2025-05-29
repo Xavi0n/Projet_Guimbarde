@@ -3,16 +3,31 @@
 
 #include <stdbool.h>
 
-#define DEFAULT_VERTICAL_ANGLE 10       // Default vertical angle for the turret, looking fully down
-#define DEFAULT_HORIZONTAL_ANGLE 50     // Default horizontal angle for the turret, looking right in the center
+// Structure to hold positions for pipe communication
+typedef struct {
+    char x;
+    char y;
+} ServoPosition;
 
-// Current angles of the turret
+// Pipe file descriptors
+extern int pipefd[2];
+
+// Global angle variables
 extern int current_horizontal_angle;
 extern int current_vertical_angle;
-extern int pipeX[2];
-extern int pipeY[2];
+
 // Global control flag
 extern volatile bool running;
+
+// Default angles
+#define DEFAULT_HORIZONTAL_ANGLE 55
+#define DEFAULT_VERTICAL_ANGLE 55
+
+// Angle limits
+#define MIN_HORIZONTAL_ANGLE 0
+#define MAX_HORIZONTAL_ANGLE 110
+#define MIN_VERTICAL_ANGLE 55
+#define MAX_VERTICAL_ANGLE 160
 
 #endif
 

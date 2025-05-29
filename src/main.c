@@ -20,12 +20,6 @@ int current_vertical_angle = DEFAULT_VERTICAL_ANGLE;
 
 int pipefd[2];
 
-// Structure to hold positions
-typedef struct {
-    char x;
-    char y;
-} ServoPosition;
-
 // Global control flag
 volatile bool running = true;
 
