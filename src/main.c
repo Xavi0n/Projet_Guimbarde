@@ -4,6 +4,7 @@
 #ifdef __arm__
 #include <unistd.h>
 #include <rc/time.h>
+#include <rc/servo.h>
 #else
 #include "../dev_includes/beaglebone_stubs.h"  // All BeagleBone and system stubs
 #endif
@@ -26,6 +27,7 @@ int main() {
     printf("Starting turret control system...\n");
 
     // initialize PRU
+    printf("Initialising PRU\n");
 	if(rc_servo_init()) return -1;
 
     pid_t pid = fork();
