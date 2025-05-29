@@ -89,13 +89,6 @@ static int clamp(int value, int min, int max) {
 }
 
 int move_to_closest_target(TargetInfo *target_info) {
-    // Send the calculated angles through the pipe
-        ServoPosition pos = {
-            .x = (char)current_horizontal_angle,
-            .y = (char)current_vertical_angle
-        };
-        write(pipefd[1], &pos, sizeof(ServoPosition));
-        
     if (!target_info) {
         printf("Error: Invalid target_info pointer\n");
         return -1;
@@ -104,6 +97,9 @@ int move_to_closest_target(TargetInfo *target_info) {
     // Calculate offset from center
     int dx = (int)target_info->x - SCREEN_CENTER_X;
     int dy = (int)target_info->y - SCREEN_CENTER_Y;
+
+    printf("Target position: x=%d, y=%d (dx=%d, dy=%d)\n", 
+           target_info->x, target_info->y, dx, dy);
 
     // Only move if outside the deadzone
     if (abs(dx) > TARGET_DEADZONE || abs(dy) > TARGET_DEADZONE) {
@@ -128,19 +124,30 @@ int move_to_closest_target(TargetInfo *target_info) {
 
         // Update angles based on target position and clamp to valid ranges
         if (abs(dx) > TARGET_DEADZONE) {
-            // When dx > 0 (target is right of center), increase angle (turn right)
-            // When dx < 0 (target is left of center), decrease angle (turn left)
-            current_horizontal_angle += (dx > 0 ? -horizontal_adjustment : horizontal_adjustment);
+            int old_angle = current_horizontal_angle;
+            // When dx > 0 (target is right of center), add angle (turn right)
+            // When dx < 0 (target is left of center), subtract angle (turn left)
+            current_horizontal_angle += (dx > 0 ? horizontal_adjustment : -horizontal_adjustment);
             current_horizontal_angle = clamp(current_horizontal_angle, MIN_HORIZONTAL_ANGLE, MAX_HORIZONTAL_ANGLE);
+            printf("Horizontal: dx=%d, adj=%d, angle: %d -> %d\n", 
+                   dx, horizontal_adjustment, old_angle, current_horizontal_angle);
         }
 
         if (abs(dy) > TARGET_DEADZONE) {
+            int old_angle = current_vertical_angle;
             // Invert dy because screen coordinates increase downward
             current_vertical_angle += (dy > 0 ? -vertical_adjustment : vertical_adjustment);
             current_vertical_angle = clamp(current_vertical_angle, MIN_VERTICAL_ANGLE, MAX_VERTICAL_ANGLE);
+            printf("Vertical: dy=%d, adj=%d, angle: %d -> %d\n", 
+                   dy, vertical_adjustment, old_angle, current_vertical_angle);
         }
 
-        
+        // Send the calculated angles through the pipe
+        ServoPosition pos = {
+            .x = (char)current_horizontal_angle,
+            .y = (char)current_vertical_angle
+        };
+        write(pipefd[1], &pos, sizeof(ServoPosition));
     }
 
     return 0;
