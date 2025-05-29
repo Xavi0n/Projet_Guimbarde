@@ -68,7 +68,8 @@ void vmoveTurretHorizontal(int angle)
 		}
 
 		Servo_positionH = ((AngleServo / 110.0) * 3.0) - 1.5;*/
-		rc_servo_send_pulse_normalized(1, angle);
+		Servo_positionH = ((angle / 110.0) * 3.0) - 1.5;
+		rc_servo_send_pulse_normalized(1, angServo_positionHle);
 	}
 }
 
