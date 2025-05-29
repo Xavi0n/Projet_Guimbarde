@@ -24,15 +24,11 @@ int Servo_Movements(void)
 {
 	//printf("Initializing servo system...\n");
 	
-	
-	
 	printf("Servo system initialized successfully\n");
 
 	while(1)
 	{
-		rc_servo_init();
 		vmoveTurretHorizontal(current_horizontal_angle);
-		rc_servo_init();
 		vmoveTurretVertical(current_vertical_angle);
 		rc_usleep(1000000/50);
 	}

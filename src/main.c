@@ -25,6 +25,9 @@ static volatile bool has_new_target = false;
 int main() {
     printf("Starting turret control system...\n");
 
+    // initialize PRU
+	if(rc_servo_init()) return -1;
+
     pid_t pid = fork();
     
     if (pid < 0) {
