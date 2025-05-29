@@ -136,7 +136,7 @@ int move_to_closest_target(TargetInfo *target_info) {
         if (abs(dy) > TARGET_DEADZONE) {
             int old_angle = current_vertical_angle;
             // Invert dy because screen coordinates increase downward
-            current_vertical_angle += (dy > 0 ? -vertical_adjustment : vertical_adjustment);
+            current_vertical_angle += (dy > 0 ? vertical_adjustment : -vertical_adjustment);
             current_vertical_angle = clamp(current_vertical_angle, MIN_VERTICAL_ANGLE, MAX_VERTICAL_ANGLE);
             printf("Vertical: dy=%d, adj=%d, angle: %d -> %d\n", 
                    dy, vertical_adjustment, old_angle, current_vertical_angle);
