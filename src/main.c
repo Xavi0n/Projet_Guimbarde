@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#ifdef __arm__
+#include <rc/time.h>
+#else
 #include "../dev_includes/beaglebone_stubs.h"  // All BeagleBone and system stubs
+#endif
 #include "main.h"
 #include "auto_targeting.h"
 #include "ServoAdjust.h"
@@ -37,10 +41,13 @@ int main() {
     }
     else {
         // Parent process - handles target detection
-        while(1) {
+        while(running) {
             // Try to find and track a person
             if (find_closest_target(ID_PERSON, &current_target) == 1) {
-                has_new_target = true;
+                // Move turret to track target
+                if (move_to_closest_target(&current_target) != 0) {
+                    printf("Error: Failed to move turret\n");
+                }
             }
             rc_usleep(100000);  // 100ms delay for target detection
         }

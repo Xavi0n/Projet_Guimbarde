@@ -6,11 +6,12 @@
  * @date       3/20/2018
  */
 
+#include <stdio.h>
 #include <signal.h>
 #ifdef __arm__
 // BeagleBone target platform
-#include "time.h"
-#include "servo.h"
+#include <rc/time.h>
+#include <rc/servo.h>
 #else
 // Development platform
 #include "../dev_includes/beaglebone_stubs.h"
@@ -21,10 +22,15 @@
 
 int Servo_Movements(void)
 {
+	printf("Initializing servo system...\n");
+	
 	// initialize PRU
 	if(rc_servo_init()) {
+		printf("Failed to initialize servo system\n");
 		return -1;
 	}
+	
+	printf("Servo system initialized successfully\n");
 
 	while(running)
 	{
@@ -33,6 +39,7 @@ int Servo_Movements(void)
 		rc_usleep(1000000/50);
 	}
 
+	printf("Cleaning up servo system...\n");
 	rc_usleep(50000);
 	rc_servo_cleanup();
 	return 0;
@@ -70,6 +77,7 @@ void vmoveTurretHorizontal(int angle)
 		}
 		Servo_positionH = ((AngleServo / 270.0) * 3.0) - 1.5;
 		
+		printf("Moving horizontal servo to angle: %d (normalized: %.2f)\n", angle, Servo_positionH);
 		rc_servo_send_pulse_normalized(1, Servo_positionH);
 	}
 }
@@ -106,6 +114,7 @@ void vmoveTurretVertical(int angle)
 		}
 		Servo_positionV = ((AngleServo / 270.0) * 3.0) - 1.5;
 
+		printf("Moving vertical servos to angle: %d (normalized: %.2f)\n", angle, Servo_positionV);
 		rc_servo_send_pulse_normalized(2, Servo_positionV);
 		// Inverse of the other servo
 		rc_servo_send_pulse_normalized(3, -Servo_positionV);
