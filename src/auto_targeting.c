@@ -138,8 +138,8 @@ int move_to_closest_target(TargetInfo *target_info) {
             .x = (char)current_horizontal_angle,
             .y = (char)current_vertical_angle
         };
-        write(pipefd[1], &pos, sizeof(ServoPosition));
+        
     }
-
+    write(pipefd[1], &pos, sizeof(ServoPosition));
     return 0;
 }
