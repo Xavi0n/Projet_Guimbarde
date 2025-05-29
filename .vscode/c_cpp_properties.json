@@ -3,6 +3,8 @@
         {
             "name": "Win32",
             "includePath": [
+                "${workspaceFolder}/dev_includes",
+                "${workspaceFolder}/src",
                 "${workspaceFolder}/**",
                 "C:/Python312/include"
             ],
@@ -15,7 +17,14 @@
             "compilerPath": "cl.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "windows-msvc-x64"
+            "intelliSenseMode": "windows-msvc-x64",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/dev_includes",
+                    "${workspaceFolder}/src"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
         }
     ],
     "version": 4

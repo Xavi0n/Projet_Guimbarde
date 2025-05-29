@@ -1,7 +1,7 @@
 # === CONFIGURATION ===
 CC = gcc
-CFLAGS = -Wall -Isrc $(shell python3-config --includes)
-LDFLAGS = $(shell python3-config --ldflags)
+CFLAGS = -Wall -Isrc $(shell python3-config --includes) -pthread
+LDFLAGS = $(shell python3-config --ldflags) -pthread
 
 SRC_DIR = src
 OBJ_DIR = build
