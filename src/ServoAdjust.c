@@ -33,7 +33,7 @@ int Servo_Movements(char X_position, char Y_position)
 	//printf("Cleaning up servo system...\n");
 	//rc_usleep(50000);
 	//rc_servo_cleanup();
-	//return 0;
+	return 0;
 }
 
 void vmoveTurretHorizontal(int angle)
