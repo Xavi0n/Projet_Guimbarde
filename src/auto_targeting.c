@@ -110,16 +110,16 @@ int move_to_closest_target(TargetInfo *target_info) {
 
         // Horizontal adjustment
         if (abs(dx) > SCREEN_CENTER_X/2) {
-            horizontal_adjustment = 15; // Far from center, move more
+            horizontal_adjustment = 3; // Far from center, move more
         } else {
-            horizontal_adjustment = 10; // Closer to center, move less
+            horizontal_adjustment = 1; // Closer to center, move less
         }
 
         // Vertical adjustment
         if (abs(dy) > SCREEN_CENTER_Y/2) {
-            vertical_adjustment = 15; // Far from center, move more
+            vertical_adjustment = 3; // Far from center, move more
         } else {
-            vertical_adjustment = 10; // Closer to center, move less
+            vertical_adjustment = 1; // Closer to center, move less
         }
 
         // Update angles based on target position and clamp to valid ranges
