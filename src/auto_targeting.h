@@ -16,12 +16,6 @@
 #define ID_PERSON  4
 #define ID_CHAIR   5
 
-// Angle limits for turret movement
-#define MIN_HORIZONTAL_ANGLE 0
-#define MAX_HORIZONTAL_ANGLE 110
-#define MIN_VERTICAL_ANGLE 10
-#define MAX_VERTICAL_ANGLE 160
-
 // Structure to hold targeting information
 typedef struct {
     uint16_t x;           // x position of target (0-320)

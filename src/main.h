@@ -20,14 +20,14 @@ extern int current_vertical_angle;
 extern volatile bool running;
 
 // Default angles
-#define DEFAULT_HORIZONTAL_ANGLE 55
-#define DEFAULT_VERTICAL_ANGLE 55
+#define DEFAULT_HORIZONTAL_ANGLE 55  // Default horizontal angle for the turret, looking right in the center
+#define DEFAULT_VERTICAL_ANGLE 55    // Default vertical angle for the turret
 
-// Angle limits
+// Angle limits for turret movement
 #define MIN_HORIZONTAL_ANGLE 0
-#define MAX_HORIZONTAL_ANGLE 110
-#define MIN_VERTICAL_ANGLE 55
-#define MAX_VERTICAL_ANGLE 160
+#define MAX_HORIZONTAL_ANGLE 110  // Limited horizontal range
+#define MIN_VERTICAL_ANGLE 55    // Limited downward movement
+#define MAX_VERTICAL_ANGLE 160   // Limited upward movement
 
 #endif
 
