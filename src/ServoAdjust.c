@@ -23,17 +23,17 @@ int Servo_Movements(char X_position, char Y_position)
 {	
 	printf("Servo system initialized successfully\n");
 
-	while(1)
-	{
+	//while(1)
+	//{
 		vmoveTurretHorizontal(X_position);
 		vmoveTurretVertical(Y_position);
 		rc_usleep(1000000/50);
-	}
+	//}
 
-	printf("Cleaning up servo system...\n");
-	rc_usleep(50000);
-	rc_servo_cleanup();
-	return 0;
+	//printf("Cleaning up servo system...\n");
+	//rc_usleep(50000);
+	//rc_servo_cleanup();
+	//return 0;
 }
 
 void vmoveTurretHorizontal(int angle)
