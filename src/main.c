@@ -30,6 +30,19 @@ int main() {
     printf("Initialising PRU\n");
 	if(rc_servo_init()) return -1;
 
+    int pipeX[2];
+    int pipeY[2];
+    // Créer le pipe
+    if (pipe(pipeX) == -1) {
+        perror("pipe");
+        return -1;
+    }
+    if (pipe(pipeY) == -1) {
+        perror("pipe");
+        return -1;
+    }
+    
+
     pid_t pid = fork();
     
     if (pid < 0) {
@@ -46,6 +59,8 @@ int main() {
         return 0;  // Child process ends here if Servo_Movements returns
     }
     else {
+        close(pipeX[0]);  // Fermer l'extrémité de lecture dans le processus
+        close(pipeY[0]);  // Fermer l'extrémité de lecture dans le processus
         // Parent process - handles target detection
         while(running) {
             // Try to find and track a person

@@ -115,15 +115,15 @@ int move_to_closest_target(TargetInfo *target_info) {
         if (abs(dx) > TARGET_DEADZONE) {
             current_horizontal_angle += (dx > 0 ? horizontal_adjustment : -horizontal_adjustment);
             current_horizontal_angle = clamp(current_horizontal_angle, MIN_HORIZONTAL_ANGLE, MAX_HORIZONTAL_ANGLE);
-            vmoveTurretHorizontal(current_horizontal_angle);
         }
 
         if (abs(dy) > TARGET_DEADZONE) {
             // Invert dy because screen coordinates increase downward
             current_vertical_angle += (dy > 0 ? -vertical_adjustment : vertical_adjustment);
             current_vertical_angle = clamp(current_vertical_angle, MIN_VERTICAL_ANGLE, MAX_VERTICAL_ANGLE);
-            vmoveTurretVertical(current_vertical_angle);
         }
+        write(pipeX[1], current_horizontal_angle, 1);
+        write(pipeY[1], current_vertical_angle, 1);
     }
 
     return 0;

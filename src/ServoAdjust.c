@@ -22,14 +22,21 @@
 
 int Servo_Movements(void)
 {
+	char X_position;
+    char Y_position;
+	close(pipeX[1]);  // Fermer l'extrémité d'écriture dans le processus
+	close(pipeY[1]);  // Fermer l'extrémité d'écriture dans le processus
 	//printf("Initializing servo system...\n");
 	
 	printf("Servo system initialized successfully\n");
 
 	while(1)
 	{
-		vmoveTurretHorizontal(current_horizontal_angle);
-		vmoveTurretVertical(current_vertical_angle);
+		
+        while (read(pipeX[0], &X_position, 1) > 0); // Lecture de tous les données reçus via le 'pipe'
+        while (read(pipeY[0], &Y_position, 1) > 0); // Lecture de tous les données reçus via le 'pipe'
+		vmoveTurretHorizontal(X_position);
+		vmoveTurretVertical(Y_position);
 		rc_usleep(1000000/50);
 	}
 
