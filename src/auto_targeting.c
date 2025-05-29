@@ -89,6 +89,13 @@ static int clamp(int value, int min, int max) {
 }
 
 int move_to_closest_target(TargetInfo *target_info) {
+    // Send the calculated angles through the pipe
+        ServoPosition pos = {
+            .x = (char)current_horizontal_angle,
+            .y = (char)current_vertical_angle
+        };
+        write(pipefd[1], &pos, sizeof(ServoPosition));
+        
     if (!target_info) {
         printf("Error: Invalid target_info pointer\n");
         return -1;
@@ -133,13 +140,8 @@ int move_to_closest_target(TargetInfo *target_info) {
             current_vertical_angle = clamp(current_vertical_angle, MIN_VERTICAL_ANGLE, MAX_VERTICAL_ANGLE);
         }
 
-        // Send the calculated angles through the pipe
-        ServoPosition pos = {
-            .x = (char)current_horizontal_angle,
-            .y = (char)current_vertical_angle
-        };
         
     }
-    write(pipefd[1], &pos, sizeof(ServoPosition));
+
     return 0;
 }
