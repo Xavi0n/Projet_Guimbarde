@@ -21,7 +21,7 @@
 
 int Servo_Movements(char X_position, char Y_position)
 {	
-	printf("Servo system initialized successfully\n");
+	//printf("Servo system initialized successfully\n");
 
 	//while(1)
 	//{

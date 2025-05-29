@@ -121,7 +121,7 @@ int move_to_closest_target(TargetInfo *target_info) {
 
         // Update angles based on target position and clamp to valid ranges
         if (abs(dx) > TARGET_DEADZONE) {
-            current_horizontal_angle += (dx > 0 ? horizontal_adjustment : -horizontal_adjustment);
+            current_horizontal_angle += (dx > 0 ? -horizontal_adjustment : horizontal_adjustment);
             current_horizontal_angle = clamp(current_horizontal_angle, MIN_HORIZONTAL_ANGLE, MAX_HORIZONTAL_ANGLE);
         }
 

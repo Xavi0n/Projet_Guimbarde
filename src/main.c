@@ -75,7 +75,7 @@ int main() {
                 // Any other error is unexpected
                 perror("read error");
             }
-            rc_usleep(20000);  // 20ms delay
+            //rc_usleep(20000);  // 20ms delay
         }
         
         close(pipefd[0]);
