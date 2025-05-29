@@ -45,7 +45,7 @@ void vmoveTurretHorizontal(int angle)
 		int directionH = 0;
 		double Servo_positionH;
 
-		if(AngleServo < sweep_limitH)
+		/*if(AngleServo < sweep_limitH)
 		{
 			directionH = 2;
 			AngleServo += 1.0 * sweep_limitH / 10.0;
@@ -66,8 +66,9 @@ void vmoveTurretHorizontal(int angle)
 			AngleServo = sweep_limitH;
 			directionH = 0;
 		}
-		Servo_positionH = ((AngleServo / 110.0) * 3.0) - 1.5;
-		rc_servo_send_pulse_normalized(1, Servo_positionH);
+
+		Servo_positionH = ((AngleServo / 110.0) * 3.0) - 1.5;*/
+		rc_servo_send_pulse_normalized(1, angle);
 	}
 }
 
