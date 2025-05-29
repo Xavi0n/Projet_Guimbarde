@@ -101,27 +101,29 @@ int move_to_closest_target(TargetInfo *target_info) {
     // Only move if outside the deadzone
     if (abs(dx) > TARGET_DEADZONE || abs(dy) > TARGET_DEADZONE) {
         // Calculate angle adjustments based on distance from center
-        // Further from center = larger angle adjustment (2-3 degrees)
+        // Further from center = larger angle adjustment
         int horizontal_adjustment;
         int vertical_adjustment;
 
         // Horizontal adjustment
         if (abs(dx) > SCREEN_CENTER_X/2) {
-            horizontal_adjustment = 30; // Far from center, move 3 degrees
+            horizontal_adjustment = 30; // Far from center, move more
         } else {
-            horizontal_adjustment = 15; // Closer to center, move 2 degrees
+            horizontal_adjustment = 15; // Closer to center, move less
         }
 
         // Vertical adjustment
         if (abs(dy) > SCREEN_CENTER_Y/2) {
-            vertical_adjustment = 30; // Far from center, move 3 degrees
+            vertical_adjustment = 30; // Far from center, move more
         } else {
-            vertical_adjustment = 15; // Closer to center, move 2 degrees
+            vertical_adjustment = 15; // Closer to center, move less
         }
 
         // Update angles based on target position and clamp to valid ranges
         if (abs(dx) > TARGET_DEADZONE) {
-            current_horizontal_angle += (dx > 0 ? -horizontal_adjustment : horizontal_adjustment);
+            // When dx > 0 (target is right of center), we need to decrease angle (turn left)
+            // When dx < 0 (target is left of center), we need to increase angle (turn right)
+            current_horizontal_angle += (dx > 0 ? horizontal_adjustment : -horizontal_adjustment);
             current_horizontal_angle = clamp(current_horizontal_angle, MIN_HORIZONTAL_ANGLE, MAX_HORIZONTAL_ANGLE);
         }
 
