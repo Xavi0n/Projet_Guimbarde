@@ -79,19 +79,15 @@ int main() {
         return 0;
     }
     else {
-        // Parent process - handles target detection and position calculations
+        // Parent process - handles target detection
         close(pipefd[0]); // Close read end in parent
         
         TargetInfo current_target;
         while(running) {
             // Try to find and track a person
             if (find_closest_target(ID_PERSON, &current_target) == 1) {
-                // Convert target info to servo positions
-                ServoPosition pos = {
-                    .x = (char)current_target.x,
-                    .y = (char)current_target.y
-                };
-                write(pipefd[1], &pos, sizeof(ServoPosition));
+                // Let move_to_closest_target handle angle calculation and pipe communication
+                move_to_closest_target(&current_target);
             }
             rc_usleep(20000);  // 20ms delay for target detection
         }
