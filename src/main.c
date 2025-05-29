@@ -4,7 +4,7 @@
 #include "../dev_includes/beaglebone_stubs.h"  // All BeagleBone and system stubs
 #include "main.h"
 #include "auto_targeting.h"
-#include "servos.h"
+#include "ServoAdjust.h"
 
 // Initialize turret angles with default values
 int current_horizontal_angle = DEFAULT_HORIZONTAL_ANGLE;

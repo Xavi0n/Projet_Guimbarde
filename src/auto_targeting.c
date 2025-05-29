@@ -4,7 +4,7 @@
 #include "huskylens_api.h"
 #include "auto_targeting.h"
 #include "main.h"
-#include "servos.h"
+#include "ServoAdjust.h"
 
 // Helper function to get object name from ID
 const char* get_object_name(int id) {
