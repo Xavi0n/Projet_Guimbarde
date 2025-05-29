@@ -22,15 +22,15 @@
 
 int Servo_Movements(void)
 {
-	printf("Initializing servo system...\n");
+	//printf("Initializing servo system...\n");
 	
 	// initialize PRU
 	if(rc_servo_init()) {
-		printf("Failed to initialize servo system\n");
+		//printf("Failed to initialize servo system\n");
 		return -1;
 	}
-	
-	printf("Servo system initialized successfully\n");
+	int running = 1;
+	//printf("Servo system initialized successfully\n");
 
 	while(running)
 	{
@@ -76,8 +76,6 @@ void vmoveTurretHorizontal(int angle)
 			directionH = 0;
 		}
 		Servo_positionH = ((AngleServo / 270.0) * 3.0) - 1.5;
-		
-		printf("Moving horizontal servo to angle: %d (normalized: %.2f)\n", angle, Servo_positionH);
 		rc_servo_send_pulse_normalized(1, Servo_positionH);
 	}
 }
@@ -114,7 +112,6 @@ void vmoveTurretVertical(int angle)
 		}
 		Servo_positionV = ((AngleServo / 270.0) * 3.0) - 1.5;
 
-		printf("Moving vertical servos to angle: %d (normalized: %.2f)\n", angle, Servo_positionV);
 		rc_servo_send_pulse_normalized(2, Servo_positionV);
 		// Inverse of the other servo
 		rc_servo_send_pulse_normalized(3, -Servo_positionV);
