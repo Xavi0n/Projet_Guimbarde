@@ -1,5 +1,5 @@
-#ifndef SERVOS_H
-#define SERVOS_H
+#ifndef SERVOADJUST_H
+#define SERVOADJUST_H
 
 /**
  * Initialize and run the servo movement loop

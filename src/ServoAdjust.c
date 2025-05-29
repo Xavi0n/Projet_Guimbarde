@@ -9,13 +9,13 @@
 #include <signal.h>
 #ifdef __arm__
 // BeagleBone target platform
-#include <rc/time.h>
-#include <rc/servo.h>
+#include "time.h"
+#include "servo.h"
 #else
 // Development platform
 #include "../dev_includes/beaglebone_stubs.h"
 #endif
-#include "servos.h"
+#include "ServoAdjust.h"
 #include "main.h"
 
 
