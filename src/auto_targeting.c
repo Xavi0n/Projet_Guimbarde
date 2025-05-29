@@ -128,7 +128,7 @@ int move_to_closest_target(TargetInfo *target_info) {
             // When dx > 0 (target is right of center), add angle (turn right)
             // When dx < 0 (target is left of center), subtract angle (turn left)
             current_horizontal_angle += (dx > 0 ? horizontal_adjustment : -horizontal_adjustment);
-            current_horizontal_angle = clamp(current_horizontal_angle, MIN_HORIZONTAL_ANGLE, MAX_HORIZONTAL_ANGLE);
+            current_horizontal_angle = current_horizontal_angle, MIN_HORIZONTAL_ANGLE, MAX_HORIZONTAL_ANGLE;
             printf("Horizontal: dx=%d, adj=%d, angle: %d -> %d\n", 
                    dx, horizontal_adjustment, old_angle, current_horizontal_angle);
         }
