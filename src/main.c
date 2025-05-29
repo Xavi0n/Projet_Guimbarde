@@ -92,7 +92,7 @@ int main() {
                 // Let move_to_closest_target handle angle calculation and pipe communication
                 move_to_closest_target(&current_target);
             }
-            rc_usleep(20000);  // 20ms delay for target detection
+            //rc_usleep(20000);  // 20ms delay for target detection
         }
         
         close(pipefd[1]);
