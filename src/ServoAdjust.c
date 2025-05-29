@@ -27,7 +27,7 @@ int Servo_Movements(char X_position, char Y_position)
 	//{
 		vmoveTurretHorizontal(X_position);
 		vmoveTurretVertical(Y_position);
-		rc_usleep(1000000/333);
+		rc_usleep(1000000/50);
 	//}
 
 	//printf("Cleaning up servo system...\n");
