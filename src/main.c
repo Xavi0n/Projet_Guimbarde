@@ -26,6 +26,9 @@ volatile bool running = true;
 int main() {
     printf("Starting turret control system...\n");
 
+    rc_usleep(50000);
+	rc_servo_cleanup();
+    
     // initialize PRU
     printf("Initialising PRU\n");
 	if(rc_servo_init()) return -1;
