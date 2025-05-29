@@ -17,23 +17,14 @@
 #include "../dev_includes/beaglebone_stubs.h"
 #endif
 #include "ServoAdjust.h"
-#include "main.h"
 
 
-int Servo_Movements(void)
-{
-	char X_position;
-    char Y_position;
-	close(pipeX[1]);  // Fermer l'extrémité d'écriture dans le processus
-	close(pipeY[1]);  // Fermer l'extrémité d'écriture dans le processus
-	//printf("Initializing servo system...\n");
-	
+int Servo_Movements(char X_position, char Y_position)
+{	
 	printf("Servo system initialized successfully\n");
 
 	while(1)
 	{
-        while (read(pipeX[0], &X_position, 1) > 0){} // Lecture de tous les données reçus via le 'pipe'
-        while (read(pipeY[0], &Y_position, 1) > 0){} // Lecture de tous les données reçus via le 'pipe'
 		vmoveTurretHorizontal(X_position);
 		vmoveTurretVertical(Y_position);
 		rc_usleep(1000000/50);
@@ -84,7 +75,7 @@ void vmoveTurretVertical(int angle)
 {
 	if(angle <= 160 && angle >= 55)
 	{
-		static double AngleServo = 10;
+		static double AngleServo = 55;
 		double sweep_limitV = angle;
 		int directionV = 0;
 		double Servo_positionV;

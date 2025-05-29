@@ -20,6 +20,16 @@ ssize_t read(int fd, void *buf, size_t count);
 ssize_t write(int fd, const void *buf, size_t count);
 int pipe(int pipefd[2]);
 
+// fcntl definitions
+int fcntl(int fd, int cmd, ...);
+#define F_GETFL 3
+#define F_SETFL 4
+#define O_NONBLOCK 04000
+
+// Error codes
+extern int errno;
+#define EAGAIN 11  /* Try again */
+
 // BeagleBone Blue rc_time functions
 void rc_usleep(unsigned int us);
 

@@ -5,7 +5,7 @@
  * Initialize and run the servo movement loop
  * @return 0 on success, -1 on error
  */
-int Servo_Movements(void);
+int Servo_Movements(char X_position, char Y_position);
 
 /**
  * Move the horizontal turret servo to a specific angle
