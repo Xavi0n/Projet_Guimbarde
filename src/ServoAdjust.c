@@ -48,12 +48,12 @@ void vmoveTurretHorizontal(int angle)
 		if(AngleServo < sweep_limitH)
 		{
 			directionH = 2;
-			AngleServo += 1.0 * sweep_limitH / 50.0;
+			AngleServo += 1.0 * sweep_limitH / 10.0;
 		}
 		if(AngleServo > sweep_limitH)
 		{
 			directionH = -2;
-			AngleServo += -1.0 * sweep_limitH / 50.0;
+			AngleServo += -1.0 * sweep_limitH / 10.0;
 		}
 
 		if(AngleServo > sweep_limitH && directionH == 1)
@@ -83,12 +83,12 @@ void vmoveTurretVertical(int angle)
 		if(AngleServo < sweep_limitV)
 		{
 			directionV = 2;
-			AngleServo += 1.0 * sweep_limitV / 50.0;
+			AngleServo += 1.0 * sweep_limitV / 10.0;
 		}
 		if(AngleServo > sweep_limitV)
 		{
 			directionV = -2;
-			AngleServo += -1.0 * sweep_limitV / 50.0;
+			AngleServo += -1.0 * sweep_limitV / 10.0;
 		}
 
 		if(AngleServo > sweep_limitV && directionV == 1)
