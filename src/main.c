@@ -16,7 +16,7 @@ int current_horizontal_angle = DEFAULT_HORIZONTAL_ANGLE;
 int current_vertical_angle = DEFAULT_VERTICAL_ANGLE;
 
 // Global control flag
-//volatile bool running = true;
+volatile bool running = true;
 
 // Shared target info between processes
 static TargetInfo current_target;

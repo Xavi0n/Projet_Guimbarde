@@ -29,10 +29,10 @@ int Servo_Movements(void)
 		//printf("Failed to initialize servo system\n");
 		return -1;
 	}
-	int running = 1;
+	int test = 1;
 	//printf("Servo system initialized successfully\n");
 
-	while(running)
+	while(test)
 	{
 		vmoveTurretHorizontal(current_horizontal_angle);
 		vmoveTurretVertical(current_vertical_angle);
