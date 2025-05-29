@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
 #ifdef __arm__
 #include <unistd.h>
@@ -16,6 +15,9 @@
 int current_horizontal_angle = DEFAULT_HORIZONTAL_ANGLE;
 int current_vertical_angle = DEFAULT_VERTICAL_ANGLE;
 
+int pipeX[2];
+int pipeY[2];
+
 // Global control flag
 volatile bool running = true;
 
@@ -30,8 +32,6 @@ int main() {
     printf("Initialising PRU\n");
 	if(rc_servo_init()) return -1;
 
-    int pipeX[2];
-    int pipeY[2];
     // Créer le pipe
     if (pipe(pipeX) == -1) {
         perror("pipe");
