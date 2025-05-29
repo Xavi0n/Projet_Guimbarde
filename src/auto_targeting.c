@@ -4,7 +4,15 @@
 #include "huskylens_api.h"
 #include "auto_targeting.h"
 #include "main.h"
-#include "ServoAdjust.h"
+
+#ifdef __arm__
+// BeagleBone target platform
+#include <unistd.h>
+#else
+// Development platform
+#include "../dev_includes/beaglebone_stubs.h"
+#endif
+
 
 // Helper function to get object name from ID
 const char* get_object_name(int id) {
@@ -122,8 +130,8 @@ int move_to_closest_target(TargetInfo *target_info) {
             current_vertical_angle += (dy > 0 ? -vertical_adjustment : vertical_adjustment);
             current_vertical_angle = clamp(current_vertical_angle, MIN_VERTICAL_ANGLE, MAX_VERTICAL_ANGLE);
         }
-        write(pipeX[1], current_horizontal_angle, 1);
-        write(pipeY[1], current_vertical_angle, 1);
+        write(pipeX[1], &current_horizontal_angle, 1);
+        write(pipeY[1], &current_vertical_angle, 1);
     }
 
     return 0;

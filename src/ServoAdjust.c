@@ -7,11 +7,11 @@
  */
 
 #include <stdio.h>
-#include <signal.h>
 #ifdef __arm__
 // BeagleBone target platform
 #include <rc/time.h>
 #include <rc/servo.h>
+#include <unistd.h>
 #else
 // Development platform
 #include "../dev_includes/beaglebone_stubs.h"
@@ -33,8 +33,8 @@ int Servo_Movements(void)
 	while(1)
 	{
 		
-        while (read(pipeX[0], &X_position, 1) > 0); // Lecture de tous les données reçus via le 'pipe'
-        while (read(pipeY[0], &Y_position, 1) > 0); // Lecture de tous les données reçus via le 'pipe'
+        while (read(pipeX[0], &X_position, 1) > 0) // Lecture de tous les données reçus via le 'pipe'
+        while (read(pipeY[0], &Y_position, 1) > 0) // Lecture de tous les données reçus via le 'pipe'
 		vmoveTurretHorizontal(X_position);
 		vmoveTurretVertical(Y_position);
 		rc_usleep(1000000/50);

@@ -7,8 +7,8 @@
 #define DEFAULT_HORIZONTAL_ANGLE 50     // Default horizontal angle for the turret, looking right in the center
 
 // Current angles of the turret
-//extern int current_horizontal_angle;
-//extern int current_vertical_angle;
+extern int current_horizontal_angle;
+extern int current_vertical_angle;
 extern int pipeX[2];
 extern int pipeY[2];
 // Global control flag
