@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #ifdef __arm__
+#include <unistd.h>
 #include <rc/time.h>
 #else
 #include "../dev_includes/beaglebone_stubs.h"  // All BeagleBone and system stubs
