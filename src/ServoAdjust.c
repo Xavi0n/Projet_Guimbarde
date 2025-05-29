@@ -25,14 +25,11 @@ int Servo_Movements(void)
 	//printf("Initializing servo system...\n");
 	
 	// initialize PRU
-	if(rc_servo_init()) {
-		//printf("Failed to initialize servo system\n");
-		return -1;
-	}
-	int test = 1;
-	//printf("Servo system initialized successfully\n");
+	if(rc_servo_init()) return -1;
+	
+	printf("Servo system initialized successfully\n");
 
-	while(test)
+	while(1)
 	{
 		vmoveTurretHorizontal(current_horizontal_angle);
 		vmoveTurretVertical(current_vertical_angle);
