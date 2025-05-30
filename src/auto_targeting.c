@@ -66,7 +66,7 @@ int find_closest_target(int target_id, TargetInfo *target_info) {
                 target_info->x = (uint16_t)objects[i].x;
                 // Calculate Y position 1/4 down from the top of the object
                 // Instead of subtracting half height (center to top), subtract 1/4 height
-                target_info->y = (uint16_t)(objects[i].y - (objects[i].height / 4));
+                target_info->y = (uint16_t)(objects[i].y - (objects[i].height / 8));
                 target_info->distance = distance;
                 found = 1;
             }
