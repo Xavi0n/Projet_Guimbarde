@@ -87,8 +87,8 @@ int main() {
         
         TargetInfo current_target;
         while(running) {
-            // Try to find and track a person
-            if (find_closest_target(ID_PERSON, &current_target) == 1) {
+            // Try to find and track a bottle
+            if (find_closest_target(ID_BOTTLE, &current_target) == 1) {
                 // Let move_to_closest_target handle angle calculation and pipe communication
                 move_to_closest_target(&current_target);
             }
