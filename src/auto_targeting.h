@@ -7,7 +7,7 @@
 #define SCREEN_CENTER_X 160
 #define SCREEN_CENTER_Y 120
 #define MAX_OBJECTS 32     
-#define TARGET_DEADZONE 0  // Target is considered centered if within this many pixels
+#define TARGET_DEADZONE 3  // Target is considered centered if within this many pixels
 
 // Object ID definitions
 #define ID_DOG     1
