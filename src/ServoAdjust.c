@@ -79,10 +79,10 @@ void vmoveTurretVertical(int angle)
 {
 	if(angle <= 160 && angle >= 55)
 	{
-		static double AngleServo = 55;
+		double Servo_positionV;
+		/*static double AngleServo = 55;
 		double sweep_limitV = angle;
 		int directionV = 0;
-		double Servo_positionV;
 
 		if(AngleServo < sweep_limitV)
 		{
@@ -105,7 +105,8 @@ void vmoveTurretVertical(int angle)
 			AngleServo = sweep_limitV;
 			directionV = 0;
 		}
-		Servo_positionV = ((AngleServo / 270.0) * 3.0) - 1.5;
+		Servo_positionV = ((AngleServo / 270.0) * 3.0) - 1.5;*/
+		Servo_positionV = ((angle / 270.0) * 3.0) - 1.5;
 
 		rc_servo_send_pulse_normalized(2, Servo_positionV);
 		// Inverse of the other servo
