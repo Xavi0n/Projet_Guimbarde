@@ -64,7 +64,9 @@ int find_closest_target(int target_id, TargetInfo *target_info) {
             // If this is the closest one so far, update target_info
             if (distance < target_info->distance) {
                 target_info->x = (uint16_t)objects[i].x;
-                target_info->y = (uint16_t)objects[i].y;
+                // Calculate the Y position of the top of the object
+                // The HuskyLens gives us the center Y and height, so we subtract half the height
+                target_info->y = (uint16_t)(objects[i].y - (objects[i].height / 2));
                 target_info->distance = distance;
                 found = 1;
             }
