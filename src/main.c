@@ -19,6 +19,12 @@
 int current_horizontal_angle = DEFAULT_HORIZONTAL_ANGLE;
 int current_vertical_angle = DEFAULT_VERTICAL_ANGLE;
 
+unsigned char sent_uart_data[2] = {'$', DONT_SHOOT};                  // Buffer for outgoing UART data
+unsigned char received_uart_data[4] = {0x00, 0x00, 0x00, 0x00};         // Buffer for incoming UART data
+
+unsigned char mode = AUTOMATIC;
+unsigned char On_Target = 0; // Flag to indicate if the target is centered
+
 int pipefd[2];
 
 // Global control flag
@@ -41,17 +47,15 @@ int main() {
         return -1;
     }
 
-    unsigned char uart_buffer[] = {0x55, 0xAA, DEFAULT_FLYWHEEL_SPEED, DEFAULT_FAN_SPEED, DEFAULT_RECOIL_SPEED, DEFAULT_AGITATOR_SPEED, 0x00}; // Start condition 0x55, 0xAA, then Flywheel, Fan, Recoil, Agitator and checksum
-
     // Calculate checksum
     unsigned char checksum = 0;
-    for (int i = 2; i < sizeof(uart_buffer) - 1; i++) {
-        checksum += uart_buffer[i];
+    for (int i = 2; i < sizeof(sent_uart_data) - 1; i++) {
+        checksum += sent_uart_data[i];
     }
-    uart_buffer[sizeof(uart_buffer) - 1] = checksum; // Set checksum byte
+    sent_uart_data[sizeof(sent_uart_data) - 1] = checksum; // Set checksum byte
 
     // Send initial settings over UART
-    rc_uart_write(UART_BUS, *uart_buffer, sizeof(uart_buffer)); // Send initial settings
+    rc_uart_write(UART_BUS, *sent_uart_data, sizeof(sent_uart_data)); // Send initial settings
     
     // Create pipe
     if (pipe(pipefd) == -1) {
@@ -107,16 +111,45 @@ int main() {
         
         TargetInfo current_target;
         while(running) {
-            // Try to find and track a bottle
-            if (find_closest_target(ID_PERSON, &current_target) == 1) {
-                // Let move_to_closest_target handle angle calculation and pipe communication
-                move_to_closest_target(&current_target);
+
+            if (mode == AUTOMATIC)
+            {
+                if (On_Target ==1)
+                {
+                    On_Target = 0; // Reset the flag
+                    sent_uart_data[1] = SHOOT; // Set shoot command
+                    rc_uart_write(UART_BUS, sent_uart_data, sizeof(sent_uart_data)); // Send shoot command
+                    sent_uart_data[1] = DONT_SHOOT; // Reset to no shoot command
+                }
+                if (find_closest_target(ID_PERSON, &current_target) == 1) 
+                {
+                    // Let move_to_closest_target handle angle calculation and pipe communication
+                    move_to_closest_target(&current_target);
+                }
             }
-            //rc_usleep(20000);  // 20ms delay for target detection
+            else
+            {
+                unsigned char AmountOfBytes = rc_uart_bytes_available(UART_BUS);
+                if (AmountOfBytes == 4) {
+                    // Read the received data
+                    rc_uart_read(UART_BUS, &received_uart_data, 4);
+                    
+                    if (received_uart_data[0] == '$')
+                    {
+                        if(received_uart_data[1] == 'M')
+                        {
+                            mode = MANUAL;
+                            current_target.x = received_uart_data[2];
+                            current_target.y = received_uart_data[3];
+                        }
+                    }
+                }
+            }
         }
-        
-        close(pipefd[1]);
+            
     }
+        
+    close(pipefd[1]);
 
     return 0;
 }

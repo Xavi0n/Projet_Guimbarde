@@ -102,6 +102,8 @@ int move_to_closest_target(TargetInfo *target_info) {
 
     // Only move if outside the deadzone
     if (abs(dx) > TARGET_DEADZONE || abs(dy) > TARGET_DEADZONE) {
+        On_Target = 0; // Target is not centered
+        
         // Calculate angle adjustments based on distance from center
         // Further from center = larger angle adjustment
         int horizontal_adjustment;
@@ -149,6 +151,9 @@ int move_to_closest_target(TargetInfo *target_info) {
             .y = (char)current_vertical_angle
         };
         write(pipefd[1], &pos, sizeof(ServoPosition));
+    }
+    else {
+        On_Target = 1; // Target is centered, shoot
     }
 
     return 0;

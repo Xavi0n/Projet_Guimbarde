@@ -16,6 +16,9 @@ extern int pipefd[2];
 extern int current_horizontal_angle;
 extern int current_vertical_angle;
 
+// Global Flags
+extern unsigned char On_Target; // Flag to indicate if the target is centered
+
 // Global control flag
 extern volatile bool running;
 
@@ -42,6 +45,10 @@ extern volatile bool running;
 #define ID_PERSON  4
 #define ID_CHAIR   5
 
+// Mode definitions
+#define AUTOMATIC 0
+#define MANUAL 1
+
 // UART definitions
 #define NON_CANONICAL 0
 #define CANONICAL 1
@@ -49,10 +56,8 @@ extern volatile bool running;
 #define UART_TIMEOUT 0.1  // 100 ms timeout for UART operations
 #define UART_BUS "/dev/ttyS1"
 
-#define DEFAULT_FLYWHEEL_SPEED 50  // Default speed for the flywheel 0-100
-#define DEFAULT_FAN_SPEED 50       // Default speed for the fan 0-100       
-#define DEFAULT_RECOIL_SPEED 50    // Default speed for the recoil 0-100
-#define DEFAULT_AGITATOR_SPEED 50  // Default speed for the agitator 0-100
+#define DONT_SHOOT 0    // Do not shoot command
+#define SHOOT 1         // Shoot command
 
 #endif
 
