@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include "main.h"
+#include "auto_targeting.h"
+#include "ServoAdjust.h"
 #ifdef __arm__
 #include <unistd.h>
 #include <rc/time.h>
@@ -7,12 +10,10 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <rc/uart.h>
 #else
 #include "../dev_includes/beaglebone_stubs.h"  // All BeagleBone and system stubs
 #endif
-#include "main.h"
-#include "auto_targeting.h"
-#include "ServoAdjust.h"
 
 // Initialize turret angles with default values
 int current_horizontal_angle = DEFAULT_HORIZONTAL_ANGLE;
@@ -31,7 +32,26 @@ int main() {
     
     // initialize PRU
     printf("Initialising PRU\n");
-	if(rc_servo_init()) return -1;
+    if(rc_servo_init()) return -1;
+
+    // Iniyialize UART
+    printf("Initialising UART\n");
+    if (rc_uart_init(UART_BUS, UART_BAUDRATE, 0.1, NON_CANONICAL, 1, 0) < 0) {
+        printf("Error: Failed to initialize UART\n");
+        return -1;
+    }
+
+    unsigned char uart_buffer[] = {0x55, 0xAA, DEFAULT_FLYWHEEL_SPEED, DEFAULT_FAN_SPEED, DEFAULT_RECOIL_SPEED, DEFAULT_AGITATOR_SPEED, 0x00}; // Start condition 0x55, 0xAA, then Flywheel, Fan, Recoil, Agitator and checksum
+
+    // Calculate checksum
+    unsigned char checksum = 0;
+    for (int i = 2; i < sizeof(uart_buffer) - 1; i++) {
+        checksum += uart_buffer[i];
+    }
+    uart_buffer[sizeof(uart_buffer) - 1] = checksum; // Set checksum byte
+
+    // Send initial settings over UART
+    rc_uart_write(UART_BUS, *uart_buffer, sizeof(uart_buffer)); // Send initial settings
     
     // Create pipe
     if (pipe(pipefd) == -1) {

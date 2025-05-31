@@ -100,9 +100,6 @@ int move_to_closest_target(TargetInfo *target_info) {
     int dx = (int)target_info->x - SCREEN_CENTER_X;
     int dy = (int)target_info->y - SCREEN_CENTER_Y;
 
-    printf("Target position: x=%d, y=%d (dx=%d, dy=%d)\n", 
-           target_info->x, target_info->y, dx, dy);
-
     // Only move if outside the deadzone
     if (abs(dx) > TARGET_DEADZONE || abs(dy) > TARGET_DEADZONE) {
         // Calculate angle adjustments based on distance from center
@@ -112,23 +109,25 @@ int move_to_closest_target(TargetInfo *target_info) {
 
         // Horizontal adjustment
         if (abs(dx) > SCREEN_CENTER_X/2) {
-            horizontal_adjustment = 5; // Far from center, move more
-        } else {
-            horizontal_adjustment = 1; // Closer to center, move less
+            horizontal_adjustment = 15; // Far from center, move more
+        } else if (abs(dx) > SCREEN_CENTER_X/4) {
+            horizontal_adjustment = 10; // Between 1/4 and 1/2, move moderately
+        }else {
+            horizontal_adjustment = 5; // Closer to center, move less
         }
 
         // Vertical adjustment
         if (abs(dy) > SCREEN_CENTER_Y/2) {
-            vertical_adjustment = 5; // Far from center, move more
-        } else {
-            vertical_adjustment = 1; // Closer to center, move less
+            vertical_adjustment = 15; // Far from center, move more
+        }else if(abs(dy) > SCREEN_CENTER_Y/4) {
+            vertical_adjustment = 10; // Between 1/4 and 1/2, move moderately
+        }else {
+            vertical_adjustment = 5; // Closer to center, move less
         }
 
         // Update angles based on target position and clamp to valid ranges
         if (abs(dx) > TARGET_DEADZONE) {
             int old_angle = current_horizontal_angle;
-            // When dx > 0 (target is right of center), add angle (turn right)
-            // When dx < 0 (target is left of center), subtract angle (turn left)
             current_horizontal_angle += (dx > 0 ? -horizontal_adjustment : horizontal_adjustment);
             current_horizontal_angle = clamp(current_horizontal_angle, MIN_HORIZONTAL_ANGLE, MAX_HORIZONTAL_ANGLE);
             printf("Horizontal: dx=%d, adj=%d, angle: %d -> %d\n", 

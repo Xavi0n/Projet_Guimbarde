@@ -38,6 +38,9 @@ int rc_servo_init(void);
 void rc_servo_cleanup(void);
 int rc_servo_send_pulse_normalized(int ch, double input);
 
+// BeagleBone Blue UART functions
+int rc_uart_init(int bus, int baudrate, float timeout, int canonical_en, int stop_bits, int parity_en);
+
 // Global control flag
 extern volatile bool running;
 

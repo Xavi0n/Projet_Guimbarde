@@ -3,19 +3,6 @@
 
 #include <stdint.h>  // For uint16_t
 
-// Screen dimensions and constants
-#define SCREEN_CENTER_X 160
-#define SCREEN_CENTER_Y 120
-#define MAX_OBJECTS 32     
-#define TARGET_DEADZONE 3  // Target is considered centered if within this many pixels
-
-// Object ID definitions
-#define ID_DOG     1
-#define ID_CAT     2
-#define ID_BOTTLE  3
-#define ID_PERSON  4
-#define ID_CHAIR   5
-
 // Structure to hold targeting information
 typedef struct {
     uint16_t x;           // x position of target (0-320)
