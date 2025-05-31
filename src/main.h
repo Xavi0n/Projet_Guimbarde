@@ -29,5 +29,30 @@ extern volatile bool running;
 #define MIN_VERTICAL_ANGLE 55    // Limited downward movement
 #define MAX_VERTICAL_ANGLE 160   // Limited upward movement
 
+// Screen dimensions and constants
+#define SCREEN_CENTER_X 160
+#define SCREEN_CENTER_Y 120
+#define MAX_OBJECTS 32     
+#define TARGET_DEADZONE 3  // Target is considered centered if within this many pixels
+
+// Object ID definitions
+#define ID_DOG     1
+#define ID_CAT     2
+#define ID_BOTTLE  3
+#define ID_PERSON  4
+#define ID_CHAIR   5
+
+// UART definitions
+#define NON_CANONICAL 0
+#define CANONICAL 1
+#define UART_BAUDRATE 115200
+#define UART_TIMEOUT 0.1  // 100 ms timeout for UART operations
+#define UART_BUS "/dev/ttyS1"
+
+#define DEFAULT_FLYWHEEL_SPEED 50  // Default speed for the flywheel 0-100
+#define DEFAULT_FAN_SPEED 50       // Default speed for the fan 0-100       
+#define DEFAULT_RECOIL_SPEED 50    // Default speed for the recoil 0-100
+#define DEFAULT_AGITATOR_SPEED 50  // Default speed for the agitator 0-100
+
 #endif
 
