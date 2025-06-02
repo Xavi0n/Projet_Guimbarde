@@ -109,22 +109,39 @@ int move_to_closest_target(TargetInfo *target_info) {
         int horizontal_adjustment;
         int vertical_adjustment;
 
-        // Horizontal adjustment
-        if (abs(dx) > SCREEN_CENTER_X/2) {
-            horizontal_adjustment = 15; // Far from center, move more
-        } else if (abs(dx) > SCREEN_CENTER_X/4) {
-            horizontal_adjustment = 10; // Between 1/4 and 1/2, move moderately
-        }else {
-            horizontal_adjustment = 5; // Closer to center, move less
+        if (mode == AUTOMATIC){
+            // Horizontal adjustment
+            if (abs(dx) > SCREEN_CENTER_X/2) {
+                horizontal_adjustment = 15; // Far from center, move more
+            } else if (abs(dx) > SCREEN_CENTER_X/4) {
+                horizontal_adjustment = 10; // Between 1/4 and 1/2, move moderately
+            }else {
+                horizontal_adjustment = 5; // Closer to center, move less
+            }
+
+            // Vertical adjustment
+            if (abs(dy) > SCREEN_CENTER_Y/2) {
+                vertical_adjustment = 15; // Far from center, move more
+            }else if(abs(dy) > SCREEN_CENTER_Y/4) {
+                vertical_adjustment = 10; // Between 1/4 and 1/2, move moderately
+            }else {
+                vertical_adjustment = 5; // Closer to center, move less
+            }
         }
 
-        // Vertical adjustment
-        if (abs(dy) > SCREEN_CENTER_Y/2) {
-            vertical_adjustment = 15; // Far from center, move more
-        }else if(abs(dy) > SCREEN_CENTER_Y/4) {
-            vertical_adjustment = 10; // Between 1/4 and 1/2, move moderately
-        }else {
-            vertical_adjustment = 5; // Closer to center, move less
+        if (mode == MANUAL) {
+            // Manual mode uses fixed adjustments
+            if (target_info.x == 1) {Horizontal_Adjustment = -2;}
+            else if (target_info.x == 2) {Horizontal_Adjustment = -1;}
+            else if (target_info.x == 3) {Horizontal_Adjustment = 0;}
+            else if (target_info.x == 4) {Horizontal_Adjustment = 1;}
+            else if (target_info.x == 5) {Horizontal_Adjustment = 2;}
+
+            if (target_info.y == 1) {Vertical_Adjustment = -2;}
+            else if (target_info.y == 2) {Vertical_Adjustment = -1;}
+            else if (target_info.y == 3) {Vertical_Adjustment = 0;}
+            else if (target_info.y == 4) {Vertical_Adjustment = 1;}
+            else if (target_info.y == 5) {Vertical_Adjustment = 2;}
         }
 
         // Update angles based on target position and clamp to valid ranges

@@ -145,11 +145,17 @@ int main() {
                         unsigned char tempHorizontal = received_uart_data[1];
                         unsigned char tempVertical = received_uart_data[2];
 
-                        if (tempHorizontal == '5') { current_target.x = 320; }
-                        else if (tempHorizontal == '4') { current_target.x = 180; }
-                        else if (tempHorizontal == '3') { current_target.x = 160; }
-                        else if (tempHorizontal == '2') { current_target.x = 140; }
-                        else if (tempHorizontal == '1') { current_target.x = 0; }
+                        if (tempHorizontal == '5') { current_target.x = 5; }
+                        else if (tempHorizontal == '4') { current_target.x = 4; }
+                        else if (tempHorizontal == '3') { current_target.x = 3; }
+                        else if (tempHorizontal == '2') { current_target.x = 2; }
+                        else if (tempHorizontal == '1') { current_target.x = 1; }
+
+                        if (tempVertical == '5') { current_target.y = 5; }
+                        else if (tempVertical == '4') { current_target.y = 4; }
+                        else if (tempVertical == '3') { current_target.y = 3; }
+                        else if (tempVertical == '2') { current_target.y = 2; }
+                        else if (tempVertical == '1') { current_target.y = 1; }
                         move_to_closest_target(&current_target);
                     }
                 }
