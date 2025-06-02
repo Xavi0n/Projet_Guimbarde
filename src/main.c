@@ -111,9 +111,9 @@ int main() {
         close(pipefd[0]); // Close read end in parent
 
         TargetInfo current_target;
+        printf("Listening on UART bus...\n");
         while (running) {
-            printf("Listening on UART bus...\n");
-            if (rc_uart_bytes_available(UART_BUS) == 4) {
+            if (rc_uart_bytes_available(UART_BUS) >= 4) {
                 // Read the received data
                 rc_uart_read_bytes(UART_BUS, received_uart_data, 4);
                 printf("Received UART data: %c%c%c%c\n", received_uart_data[0], received_uart_data[1], received_uart_data[2], received_uart_data[3]);
