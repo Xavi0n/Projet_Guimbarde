@@ -52,7 +52,7 @@ extern volatile bool running;
 // UART definitions
 #define NON_CANONICAL 0
 #define CANONICAL 1
-#define UART_BAUDRATE 115200
+#define UART_BAUDRATE 19200
 #define UART_TIMEOUT 0.1  // 100 ms timeout for UART operations
 #define UART_BUS 1
 
