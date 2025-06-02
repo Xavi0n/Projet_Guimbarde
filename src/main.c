@@ -1,4 +1,9 @@
 #include "ServoAdjust.h"
+#include "main.h"
+#include "huskylens_api.h"
+#include "auto_targeting.h"
+#include <stdio.h>
+#include <stdbool.h>
 #ifdef __arm__
 #include <unistd.h>
 #include <rc/time.h>
