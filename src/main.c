@@ -113,6 +113,7 @@ int main() {
             if (rc_uart_bytes_available(UART_BUS) == 4) {
                 // Read the received data
                 rc_uart_read(UART_BUS, &received_uart_data, 4);
+                printf("Received UART data: %c%c%c%c\n", received_uart_data[0], received_uart_data[1], received_uart_data[2], received_uart_data[3]);
                 if (received_uart_data[0] == '$') {
                     if (received_uart_data[1] == 'M') {
                         mode = MANUAL;
@@ -136,11 +137,11 @@ int main() {
                         unsigned char tempHorizontal = received_uart_data[2];
                         unsigned char tempVertical = received_uart_data[3];
 
-                        if (tempHorizontal == 5) { current_target.x = 320; }
-                        else if (tempHorizontal == 4) { current_target.x = 180; }
-                        else if (tempHorizontal == 3) { current_target.x = 160; }
-                        else if (tempHorizontal == 2) { current_target.x = 140; }
-                        else if (tempHorizontal == 1) { current_target.x = 0; }
+                        if (tempHorizontal == '5') { current_target.x = 320; }
+                        else if (tempHorizontal == '4') { current_target.x = 180; }
+                        else if (tempHorizontal == '3') { current_target.x = 160; }
+                        else if (tempHorizontal == '2') { current_target.x = 140; }
+                        else if (tempHorizontal == '1') { current_target.x = 0; }
                         move_to_closest_target(&current_target);
                     }
                 }
