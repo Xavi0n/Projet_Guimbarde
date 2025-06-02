@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <stdbool.h>
-#include "main.h"
-#include "auto_targeting.h"
+#include "ServoAdjust.h"
+#ifdef __arm__
+#include <unistd.h>
+#include <rc/time.h>
 #include "ServoAdjust.h"
 #ifdef __arm__
 #include <unistd.h>
@@ -20,7 +20,7 @@ int current_horizontal_angle = DEFAULT_HORIZONTAL_ANGLE;
 int current_vertical_angle = DEFAULT_VERTICAL_ANGLE;
 
 unsigned char sent_uart_data[2] = {'$', DONT_SHOOT};                  // Buffer for outgoing UART data
-unsigned char received_uart_data[4] = {0x00, 0x00, 0x00, 0x00};         // Buffer for incoming UART data
+unsigned char received_uart_data[4] = {0x00, 0x00, 0x00, 0x00};       // Buffer for incoming UART data
 
 unsigned char mode = AUTOMATIC;
 unsigned char On_Target = 0; // Flag to indicate if the target is centered
@@ -34,13 +34,13 @@ int main() {
     printf("Starting turret control system...\n");
 
     rc_usleep(50000);
-	rc_servo_cleanup();
-    
-    // initialize PRU
-    printf("Initialising PRU\n");
-    if(rc_servo_init()) return -1;
+    rc_servo_cleanup();
 
-    // Iniyialize UART
+    // Initialize PRU
+    printf("Initialising PRU\n");
+    if (rc_servo_init()) return -1;
+
+    // Initialize UART
     printf("Initialising UART\n");
     if (rc_uart_init(UART_BUS, UART_BAUDRATE, 0.1, NON_CANONICAL, 1, 0) < 0) {
         printf("Error: Failed to initialize UART\n");
@@ -56,15 +56,15 @@ int main() {
 
     // Send initial settings over UART
     rc_uart_write(UART_BUS, *sent_uart_data, sizeof(sent_uart_data)); // Send initial settings
-    
+
     // Create pipe
     if (pipe(pipefd) == -1) {
         perror("pipe");
         return 1;
     }
-    
+
     pid_t pid = fork();
-    
+
     if (pid < 0) {
         // Fork failed
         printf("Error: Failed to fork process\n");
@@ -73,7 +73,7 @@ int main() {
     else if (pid == 0) {
         // Child process - only handles servo movements
         close(pipefd[1]); // Close write end in child
-        
+
         // Set non-blocking flag for read end
         int flags = fcntl(pipefd[0], F_GETFL);
         if (flags == -1) {
@@ -84,9 +84,9 @@ int main() {
             perror("fcntl set non-blocking failed");
             return -1;
         }
-        
+
         ServoPosition pos;
-        while(running) {
+        while (running) {
             // Try to read from pipe (non-blocking)
             ssize_t bytes_read = read(pipefd[0], &pos, sizeof(ServoPosition));
             if (bytes_read > 0) {
@@ -99,59 +99,56 @@ int main() {
                 // Any other error is unexpected
                 perror("read error");
             }
-            //rc_usleep(20000);  // 20ms delay
         }
-        
+
         close(pipefd[0]);
         return 0;
     }
     else {
         // Parent process - handles target detection
         close(pipefd[0]); // Close read end in parent
-        
-        TargetInfo current_target;
-        while(running) {
 
-            if (mode == AUTOMATIC)
-            {
-                if (On_Target ==1)
-                {
-                    On_Target = 0; // Reset the flag
-                    sent_uart_data[1] = SHOOT; // Set shoot command
-                    rc_uart_write(UART_BUS, sent_uart_data, sizeof(sent_uart_data)); // Send shoot command
-                    sent_uart_data[1] = DONT_SHOOT; // Reset to no shoot command
-                }
-                if (find_closest_target(ID_PERSON, &current_target) == 1) 
-                {
-                    // Let move_to_closest_target handle angle calculation and pipe communication
-                    move_to_closest_target(&current_target);
-                }
-            }
-            else
-            {
-                unsigned char AmountOfBytes = rc_uart_bytes_available(UART_BUS);
-                if (AmountOfBytes == 4) {
-                    // Read the received data
-                    rc_uart_read(UART_BUS, &received_uart_data, 4);
-                    
-                    if (received_uart_data[0] == '$')
-                    {
-                        if(received_uart_data[1] == 'M')
-                        {
-                            mode = MANUAL;
-                            current_target.x = received_uart_data[2];
-                            current_target.y = received_uart_data[3];
+        TargetInfo current_target;
+        while (running) {
+            if (rc_uart_bytes_available(UART_BUS) == 4) {
+                // Read the received data
+                rc_uart_read(UART_BUS, &received_uart_data, 4);
+                if (received_uart_data[0] == '$') {
+                    if (received_uart_data[1] == 'M') {
+                        mode = MANUAL;
+                    } else if (received_uart_data[1] == 'A') {
+                        mode = AUTOMATIC;
+                    }
+
+                    if (mode == AUTOMATIC) {
+                        if (On_Target == 1) {
+                            On_Target = 0; // Reset the flag
+                            sent_uart_data[1] = SHOOT; // Set shoot command
+                            rc_uart_write(UART_BUS, sent_uart_data, sizeof(sent_uart_data)); // Send shoot command
+                            sent_uart_data[1] = DONT_SHOOT; // Reset to no shoot command
                         }
+                        if (find_closest_target(ID_PERSON, &current_target) == 1) {
+                            // Let move_to_closest_target handle angle calculation and pipe communication
+                            move_to_closest_target(&current_target);
+                        }
+                    }
+                    else { // MANUAL mode
+                        unsigned char tempHorizontal = received_uart_data[2];
+                        unsigned char tempVertical = received_uart_data[3];
+
+                        if (tempHorizontal == 5) { current_target.x = 320; }
+                        else if (tempHorizontal == 4) { current_target.x = 180; }
+                        else if (tempHorizontal == 3) { current_target.x = 160; }
+                        else if (tempHorizontal == 2) { current_target.x = 140; }
+                        else if (tempHorizontal == 1) { current_target.x = 0; }
+                        move_to_closest_target(&current_target);
                     }
                 }
             }
         }
-            
+
+        close(pipefd[1]);
+        return 0;
     }
-        
-    close(pipefd[1]);
-
-    return 0;
 }
-
 
