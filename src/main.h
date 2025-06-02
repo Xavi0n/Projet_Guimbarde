@@ -16,6 +16,9 @@ extern int pipefd[2];
 extern int current_horizontal_angle;
 extern int current_vertical_angle;
 
+//Global Mode variables
+extern unsigned char mode; // Current mode of operation (AUTOMATIC or MANUAL)
+
 // Global Flags
 extern unsigned char On_Target; // Flag to indicate if the target is centered
 
