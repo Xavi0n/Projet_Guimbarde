@@ -22,7 +22,7 @@ int current_horizontal_angle = DEFAULT_HORIZONTAL_ANGLE;
 int current_vertical_angle = DEFAULT_VERTICAL_ANGLE;
 
 unsigned char sent_uart_data[2] = {'$', DONT_SHOOT};                  // Buffer for outgoing UART data
-unsigned char received_uart_data[4] = {0x00, 0x00, 0x00, 0x00};       // Buffer for incoming UART data
+unsigned char received_uart_data[3] = {0x00, 0x00, 0x00};       // Buffer for incoming UART data
 
 unsigned char mode = AUTOMATIC;
 unsigned char On_Target = 0; // Flag to indicate if the target is centered
@@ -118,11 +118,10 @@ int main() {
                 unsigned char Start_Condition;
                 rc_uart_read_bytes(UART_BUS, &Start_Condition, 1);
                 if (Start_Condition == '$') {
-                    rc_uart_read_bytes(UART_BUS, received_uart_data, 4);
+                    rc_uart_read_bytes(UART_BUS, received_uart_data, 3);
                 }
                 rc_uart_flush(UART_BUS); // Flush the UART buffer
-                
-                printf("Received UART data: %c%c%c%c\n", received_uart_data[0], received_uart_data[1], received_uart_data[2], received_uart_data[3]);
+                printf("Received UART data: %c%c%c\n", Start_Condition, received_uart_data[0], received_uart_data[1], received_uart_data[2]);
                 if (received_uart_data[0] == '$') {
                     if (received_uart_data[1] == 'M') {
                         mode = MANUAL;
