@@ -121,7 +121,7 @@ int main() {
                     rc_uart_read_bytes(UART_BUS, received_uart_data, 3);
                 }
                 rc_uart_flush(UART_BUS); // Flush the UART buffer
-                printf("Received UART data: %c%c%c\n", Start_Condition, received_uart_data[0], received_uart_data[1], received_uart_data[2]);
+                printf("Received UART data: %c%c%c%c\n", Start_Condition, received_uart_data[0], received_uart_data[1], received_uart_data[2]);
                 if (received_uart_data[0] == '$') {
                     if (received_uart_data[1] == 'M') {
                         mode = MANUAL;
