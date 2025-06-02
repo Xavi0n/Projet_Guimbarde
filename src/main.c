@@ -116,7 +116,7 @@ int main() {
             if (rc_uart_bytes_available(UART_BUS) >= 4) {
                 // Read the received data
                 unsigned char Start_Condition;
-                rc_uart_read_bytes(UART_BUS, Start_Condition, 1);
+                rc_uart_read_bytes(UART_BUS, &Start_Condition, 1);
                 if (Start_Condition == '$') {
                     rc_uart_read_bytes(UART_BUS, received_uart_data, 4);
                 }
