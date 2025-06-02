@@ -131,17 +131,17 @@ int move_to_closest_target(TargetInfo *target_info) {
 
         if (mode == MANUAL) {
             // Manual mode uses fixed adjustments
-            if (target_info.x == 1) {Horizontal_Adjustment = -2;}
-            else if (target_info.x == 2) {Horizontal_Adjustment = -1;}
-            else if (target_info.x == 3) {Horizontal_Adjustment = 0;}
-            else if (target_info.x == 4) {Horizontal_Adjustment = 1;}
-            else if (target_info.x == 5) {Horizontal_Adjustment = 2;}
+            if (target_info->x == 1) {Horizontal_Adjustment = -2;}
+            else if (target_info->x == 2) {Horizontal_Adjustment = -1;}
+            else if (target_info->x == 3) {Horizontal_Adjustment = 0;}
+            else if (target_info->x == 4) {Horizontal_Adjustment = 1;}
+            else if (target_info->x == 5) {Horizontal_Adjustment = 2;}
 
-            if (target_info.y == 1) {Vertical_Adjustment = -2;}
-            else if (target_info.y == 2) {Vertical_Adjustment = -1;}
-            else if (target_info.y == 3) {Vertical_Adjustment = 0;}
-            else if (target_info.y == 4) {Vertical_Adjustment = 1;}
-            else if (target_info.y == 5) {Vertical_Adjustment = 2;}
+            if (target_info->y == 1) {Vertical_Adjustment = -2;}
+            else if (target_info->y == 2) {Vertical_Adjustment = -1;}
+            else if (target_info->y == 3) {Vertical_Adjustment = 0;}
+            else if (target_info->y == 4) {Vertical_Adjustment = 1;}
+            else if (target_info->y == 5) {Vertical_Adjustment = 2;}
         }
 
         // Update angles based on target position and clamp to valid ranges
