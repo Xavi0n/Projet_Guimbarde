@@ -112,6 +112,7 @@ int main() {
 
         TargetInfo current_target;
         while (running) {
+            printf("Listening on UART bus...\n");
             if (rc_uart_bytes_available(UART_BUS) == 4) {
                 // Read the received data
                 rc_uart_read_bytes(UART_BUS, received_uart_data, 4);
