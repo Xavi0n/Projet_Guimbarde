@@ -54,7 +54,7 @@ extern volatile bool running;
 #define CANONICAL 1
 #define UART_BAUDRATE 115200
 #define UART_TIMEOUT 0.1  // 100 ms timeout for UART operations
-#define UART_BUS "/dev/ttyS1"
+#define UART_BUS 1
 
 #define DONT_SHOOT 0    // Do not shoot command
 #define SHOOT 1         // Shoot command

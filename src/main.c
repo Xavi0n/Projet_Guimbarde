@@ -4,10 +4,7 @@
 #include "auto_targeting.h"
 #include <stdio.h>
 #include <stdbool.h>
-#ifdef __arm__
-#include <unistd.h>
-#include <rc/time.h>
-#include "ServoAdjust.h"
+
 #ifdef __arm__
 #include <unistd.h>
 #include <rc/time.h>
@@ -60,7 +57,7 @@ int main() {
     sent_uart_data[sizeof(sent_uart_data) - 1] = checksum; // Set checksum byte
 
     // Send initial settings over UART
-    rc_uart_write(UART_BUS, *sent_uart_data, sizeof(sent_uart_data)); // Send initial settings
+    rc_uart_write(UART_BUS, sent_uart_data, sizeof(sent_uart_data)); // Send initial settings
 
     // Create pipe
     if (pipe(pipefd) == -1) {
