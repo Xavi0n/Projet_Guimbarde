@@ -122,10 +122,10 @@ int main() {
                 }
                 rc_uart_flush(UART_BUS); // Flush the UART buffer
                 printf("Received UART data: %c%c%c%c\n", Start_Condition, received_uart_data[0], received_uart_data[1], received_uart_data[2]);
-                if (received_uart_data[0] == '$') {
-                    if (received_uart_data[1] == 'M') {
+                if (Start_Condition == '$') {
+                    if (received_uart_data[0] == 'M') {
                         mode = MANUAL;
-                    } else if (received_uart_data[1] == 'A') {
+                    } else if (received_uart_data[0] == 'A') {
                         mode = AUTOMATIC;
                     }
 
@@ -142,8 +142,8 @@ int main() {
                         }
                     }
                     else { // MANUAL mode
-                        unsigned char tempHorizontal = received_uart_data[2];
-                        unsigned char tempVertical = received_uart_data[3];
+                        unsigned char tempHorizontal = received_uart_data[1];
+                        unsigned char tempVertical = received_uart_data[2];
 
                         if (tempHorizontal == '5') { current_target.x = 320; }
                         else if (tempHorizontal == '4') { current_target.x = 180; }
