@@ -115,7 +115,13 @@ int main() {
         while (running) {
             if (rc_uart_bytes_available(UART_BUS) >= 4) {
                 // Read the received data
-                rc_uart_read_bytes(UART_BUS, received_uart_data, 4);
+                unsigned char Start_Condition;
+                rc_uart_read_bytes(UART_BUS, Start_Condition, 1);
+                if (Start_Condition == '$') {
+                    rc_uart_read_bytes(UART_BUS, received_uart_data, 4);
+                }
+                rc_uart_flush(UART_BUS); // Flush the UART buffer
+                
                 printf("Received UART data: %c%c%c%c\n", received_uart_data[0], received_uart_data[1], received_uart_data[2], received_uart_data[3]);
                 if (received_uart_data[0] == '$') {
                     if (received_uart_data[1] == 'M') {
