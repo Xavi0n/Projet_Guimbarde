@@ -26,14 +26,14 @@ extern unsigned char On_Target; // Flag to indicate if the target is centered
 extern volatile bool running;
 
 // Default angles
-#define DEFAULT_HORIZONTAL_ANGLE 55  // Default horizontal angle for the turret, looking right in the center
+#define DEFAULT_HORIZONTAL_ANGLE 50  // Default horizontal angle for the turret, looking right in the center
 #define DEFAULT_VERTICAL_ANGLE 55    // Default vertical angle for the turret
 
 // Angle limits for turret movement
 #define MIN_HORIZONTAL_ANGLE 0
-#define MAX_HORIZONTAL_ANGLE 110  // Limited horizontal range
+#define MAX_HORIZONTAL_ANGLE 100 // Limited horizontal range
 #define MIN_VERTICAL_ANGLE 55    // Limited downward movement
-#define MAX_VERTICAL_ANGLE 160   // Limited upward movement
+#define MAX_VERTICAL_ANGLE 145   // Limited upward movement
 
 // Screen dimensions and constants
 #define SCREEN_CENTER_X 160
